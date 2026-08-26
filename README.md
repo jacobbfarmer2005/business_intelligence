@@ -7,7 +7,7 @@ Data Acquisition \& Transformation, Data Visualization \& Communication, and Exp
 
 
 
-\## Skills
+\##Skills
 
 * R
 * RStudio
