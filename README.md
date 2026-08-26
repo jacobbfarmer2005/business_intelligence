@@ -2,9 +2,8 @@
 
 Jacob Farmer
 Semester: Fall 2026
-- R
 
-\- RStudio
-
-\- Git
+* R
+* RStudio
+* Git
 
