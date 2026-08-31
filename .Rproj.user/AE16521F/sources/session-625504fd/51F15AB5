@@ -3,25 +3,25 @@
     "path": "~/business_intelligence/03_r_basics.Rmd",
     "project_path": "03_r_basics.Rmd",
     "type": "r_markdown",
-    "hash": "2835747069",
+    "hash": "642160638",
     "contents": "",
-    "dirty": true,
+    "dirty": false,
     "created": 1788187544377.0,
-    "source_on_save": false,
+    "source_on_save": true,
     "relative_order": 1,
     "properties": {
         "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "9,3",
-        "scrollLine": "0"
+        "cursorPosition": "10,23",
+        "scrollLine": "1"
     },
     "folds": "",
-    "lastKnownWriteTime": 1788187584,
+    "lastKnownWriteTime": 1788188079,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1788187584087,
+    "last_content_update": 1788188079707,
     "read_only": false,
     "read_only_alternatives": []
 }
