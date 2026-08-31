@@ -1,4 +1,4 @@
-# ISA 401: Business Intelligence \& Data Visualization
+# ISA 401(N): Business Intelligence \& Data Visualization
 
 Jacob Farmer
 Semester: Fall 2026
