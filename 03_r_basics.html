@@ -1599,9 +1599,25 @@ border-radius: 0px;
 <pre class="r"><code>crashes_per_day = 30125 / 365
 crashes_per_day</code></pre>
 <pre><code>## [1] 82.53425</code></pre>
+<pre class="r"><code>crashes_by_day = c(2020, 2241, 2327, 2285,
+                   2380, 1866, 1664)
+names(crashes_by_day) = c(&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;,
+                          &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;)
+crashes_by_day</code></pre>
+<pre><code>##  Mon  Tue  Wed  Thu  Fri  Sat  Sun 
+## 2020 2241 2327 2285 2380 1866 1664</code></pre>
+<pre class="r"><code>crashes_by_day &gt; 2100</code></pre>
+<pre><code>##   Mon   Tue   Wed   Thu   Fri   Sat   Sun 
+## FALSE  TRUE  TRUE  TRUE  TRUE FALSE FALSE</code></pre>
+<div id="type-of-crashes_by_day" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Type of
+<code>crashes_by_day</code></h2>
+<pre class="r"><code>typeof(crashes_by_day)</code></pre>
+<pre><code>## [1] &quot;double&quot;</code></pre>
+</div>
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkNsYXNzIDAzIC0gUiBCYXNpY3MiDQphdXRob3I6ICJKYWNvYiBGYXJtZXIiDQpkYXRlOiAiMjAyNi0wOC0zMSINCm91dHB1dDoNCiAgaHRtbF9kb2N1bWVudDogDQogICAgdG9jOiB0cnVlDQogICAgdG9jX2Zsb2F0OiB0cnVlDQogICAgbnVtYmVyX3NlY3Rpb25zOiB0cnVlDQogICAgY29kZV9mb2xkaW5nOiBzaG93DQogICAgY29kZV9kb3dubG9hZDogdHJ1ZQ0KLS0tDQoNCmBgYHtyIHNldHVwLCBpbmNsdWRlPUZBTFNFfQ0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGVjaG8gPSBUUlVFKQ0KYGBgDQoNCiMgQ2luY3kgQ3Jhc2ggRGF0YQ0KDQpgYGB7ciBjaW5jeV9jcmFzaGVzfQ0KY3Jhc2hlc19wZXJfZGF5ID0gMzAxMjUgLyAzNjUNCmNyYXNoZXNfcGVyX2RheQ0KYGBg</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkNsYXNzIDAzIC0gUiBCYXNpY3MiDQphdXRob3I6ICJKYWNvYiBGYXJtZXIiDQpkYXRlOiAiMjAyNi0wOC0zMSINCm91dHB1dDoNCiAgaHRtbF9kb2N1bWVudDogDQogICAgdG9jOiB0cnVlDQogICAgdG9jX2Zsb2F0OiB0cnVlDQogICAgbnVtYmVyX3NlY3Rpb25zOiB0cnVlDQogICAgY29kZV9mb2xkaW5nOiBzaG93DQogICAgY29kZV9kb3dubG9hZDogdHJ1ZQ0KLS0tDQoNCmBgYHtyIHNldHVwLCBpbmNsdWRlPUZBTFNFfQ0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGVjaG8gPSBUUlVFKQ0KYGBgDQoNCiMgQ2luY3kgQ3Jhc2ggRGF0YQ0KDQpgYGB7ciBjaW5jeV9jcmFzaGVzfQ0KY3Jhc2hlc19wZXJfZGF5ID0gMzAxMjUgLyAzNjUNCmNyYXNoZXNfcGVyX2RheQ0KDQpjcmFzaGVzX2J5X2RheSA9IGMoMjAyMCwgMjI0MSwgMjMyNywgMjI4NSwNCiAgICAgICAgICAgICAgICAgICAyMzgwLCAxODY2LCAxNjY0KQ0KbmFtZXMoY3Jhc2hlc19ieV9kYXkpID0gYygiTW9uIiwgIlR1ZSIsICJXZWQiLCAiVGh1IiwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgIkZyaSIsICJTYXQiLCAiU3VuIikNCmNyYXNoZXNfYnlfZGF5DQoNCmNyYXNoZXNfYnlfZGF5ID4gMjEwMA0KYGBgDQoNCiMjIFR5cGUgb2YgYGNyYXNoZXNfYnlfZGF5YA0KDQpgYGB7ciB0eXBlb2ZfdmVjfQ0KdHlwZW9mKGNyYXNoZXNfYnlfZGF5KQ0KYGBg</div>
 
 
 </div>
