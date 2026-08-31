@@ -15,4 +15,9 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# R Markdown
+# Cincy Crash Data
+
+```{r cincy_crashes}
+crashes_per_day = 30125 / 365
+crashes_per_day
+```

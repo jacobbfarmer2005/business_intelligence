@@ -8,3 +8,10 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+# Cincy Crash Data
+
+```{r cincy_crashes}
+crashes_per_day = 30125 / 365
+crashes_per_day
+```
