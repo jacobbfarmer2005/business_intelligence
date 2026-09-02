@@ -9,11 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Jacob Farmer" />
 
-<meta name="date" content="2026-08-31" />
+<meta name="date" content="2026-09-02" />
 
-<title>Class 03 - R Basics</title>
+<title>Class 04 - Data Import &amp; Export</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1587,37 +1586,116 @@ border-radius: 0px;
 
 
 
-<h1 class="title toc-ignore">Class 03 - R Basics</h1>
-<h4 class="author">Jacob Farmer</h4>
-<h4 class="date">2026-08-31</h4>
+<h1 class="title toc-ignore">Class 04 - Data Import &amp; Export</h1>
+<h4 class="date">2026-09-02</h4>
 
 </div>
 
 
-<div id="cincy-crash-data" class="section level1" number="1">
-<h1><span class="header-section-number">1</span> Cincy Crash Data</h1>
-<pre class="r"><code>crashes_per_day = 30125 / 365
-crashes_per_day</code></pre>
-<pre><code>## [1] 82.53425</code></pre>
-<pre class="r"><code>crashes_by_day = c(2020, 2241, 2327, 2285,
-                   2380, 1866, 1664)
+<div id="data-frames" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Data Frames</h1>
+<pre class="r"><code>crashes_by_day = c(2020, 2241, 2327, 2285, 2380, 1866, 1664)
 names(crashes_by_day) = c(&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;,
                           &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;)
-crashes_by_day</code></pre>
-<pre><code>##  Mon  Tue  Wed  Thu  Fri  Sat  Sun 
-## 2020 2241 2327 2285 2380 1866 1664</code></pre>
-<pre class="r"><code>crashes_by_day &gt; 2100</code></pre>
-<pre><code>##   Mon   Tue   Wed   Thu   Fri   Sat   Sun 
-## FALSE  TRUE  TRUE  TRUE  TRUE FALSE FALSE</code></pre>
-<div id="type-of-crashes_by_day" class="section level2" number="1.1">
-<h2><span class="header-section-number">1.1</span> Type of
-<code>crashes_by_day</code></h2>
-<pre class="r"><code>typeof(crashes_by_day)</code></pre>
-<pre><code>## [1] &quot;double&quot;</code></pre>
+
+crashes_df = tibble::tibble(
+  day     = names(crashes_by_day),
+  crashes = crashes_by_day,
+  busy    = crashes_by_day &gt; 2000
+)
+crashes_df</code></pre>
+<pre><code>## # A tibble: 7 × 3
+##   day   crashes busy 
+##   &lt;chr&gt;   &lt;dbl&gt; &lt;lgl&gt;
+## 1 Mon      2020 TRUE 
+## 2 Tue      2241 TRUE 
+## 3 Wed      2327 TRUE 
+## 4 Thu      2285 TRUE 
+## 5 Fri      2380 TRUE 
+## 6 Sat      1866 FALSE
+## 7 Sun      1664 FALSE</code></pre>
+<pre class="r"><code>dplyr::glimpse(crashes_df) # equivalent of str()</code></pre>
+<pre><code>## Rows: 7
+## Columns: 3
+## $ day     &lt;chr&gt; &quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;, &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;
+## $ crashes &lt;dbl&gt; 2020, 2241, 2327, 2285, 2380, 1866, 1664
+## $ busy    &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE</code></pre>
+<pre class="r"><code>job = list(
+  title   = &quot;Research Data Scientist, Magic Eye&quot;,
+  company = &quot;Google&quot;,
+  salary  = list(min = 147000, max = 210000)
+)
+str(job)</code></pre>
+<pre><code>## List of 3
+##  $ title  : chr &quot;Research Data Scientist, Magic Eye&quot;
+##  $ company: chr &quot;Google&quot;
+##  $ salary :List of 2
+##   ..$ min: num 147000
+##   ..$ max: num 210000</code></pre>
+<pre class="r"><code>dplyr::glimpse(job)</code></pre>
+<pre><code>## List of 3
+##  $ title  : chr &quot;Research Data Scientist, Magic Eye&quot;
+##  $ company: chr &quot;Google&quot;
+##  $ salary :List of 2
+##   ..$ min: num 147000
+##   ..$ max: num 210000</code></pre>
+<pre class="r"><code># 1. The company name
+company_name = job$company
+company_name</code></pre>
+<pre><code>## [1] &quot;Google&quot;</code></pre>
+<pre class="r"><code>job[[2]]</code></pre>
+<pre><code>## [1] &quot;Google&quot;</code></pre>
+<pre class="r"><code># 2. The maximum salary.
+max_salary = job$salary[2]
+max_salary</code></pre>
+<pre><code>## $max
+## [1] 210000</code></pre>
+<pre class="r"><code>max_salary_again &lt;- job$salary$max
+
+# 3. The maximum salary again, using only [[ ]].
+job[[3]][[2]]</code></pre>
+<pre><code>## [1] 210000</code></pre>
+<pre class="r"><code># 4. The names of the elements in job.
+names(job)</code></pre>
+<pre><code>## [1] &quot;title&quot;   &quot;company&quot; &quot;salary&quot;</code></pre>
 </div>
+<div id="vectors" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Vectors</h1>
+<ul>
+<li>You can subset by position (i.e., a number) or by name if it is a
+named vector;</li>
+<li>You can also pass a vector (e.g., logical condition, 2:4, or c(,) )
+for subsetting the vector</li>
+</ul>
+<pre class="r"><code>crashes_by_day = c(2020, 2241, 2327, 2285, 2380, 1866, 1664)
+names(crashes_by_day) = c(&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;,
+                          &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;)
+
+crashes_by_day[2:4]</code></pre>
+<pre><code>##  Tue  Wed  Thu 
+## 2241 2327 2285</code></pre>
+<pre class="r"><code>crashes_by_day[c(&#39;Mon&#39;,&#39;Fri&#39;)] # crashes_by_day[c(1,5)]</code></pre>
+<pre><code>##  Mon  Fri 
+## 2020 2380</code></pre>
+<pre class="r"><code>oh_jobs = readr::read_csv(
+  file=&quot;https://fred.stlouisfed.org/graph/fredgraph.csv?bgcolor=%23ebf3fb&amp;chart_type=line&amp;drp=0&amp;fo=open%20sans&amp;graph_bgcolor=%23ffffff&amp;height=450&amp;mode=fred&amp;recession_bars=on&amp;txtcolor=%23444444&amp;ts=12&amp;tts=12&amp;width=1320&amp;nt=0&amp;thu=0&amp;trc=0&amp;show_legend=yes&amp;show_axis_titles=yes&amp;show_tooltip=yes&amp;id=IHLIDXUSOH&amp;scale=left&amp;cosd=2021-08-28&amp;coed=2026-08-28&amp;line_color=%230073e6&amp;link_values=false&amp;line_style=solid&amp;mark_type=none&amp;mw=3&amp;lw=3&amp;ost=-99999&amp;oet=99999&amp;mma=0&amp;fml=a&amp;fq=Daily%2C%207-Day&amp;fam=avg&amp;fgst=lin&amp;fgsnd=2020-02-01&amp;line_index=1&amp;transformation=lin&amp;vintage_date=2026-09-02&amp;revision_date=2026-09-02&amp;nd=2020-02-01&quot;
+)</code></pre>
+<pre><code>## Rows: 1827 Columns: 2
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## dbl  (1): IHLIDXUSOH
+## date (1): observation_date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>dplyr::glimpse(oh_jobs)</code></pre>
+<pre><code>## Rows: 1,827
+## Columns: 2
+## $ observation_date &lt;date&gt; 2021-08-28, 2021-08-29, 2021-08-30, 2021-08-31, 2021…
+## $ IHLIDXUSOH       &lt;dbl&gt; 139.62, 139.74, 139.88, 139.97, 139.95, 140.03, 140.1…</code></pre>
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkNsYXNzIDAzIC0gUiBCYXNpY3MiDQphdXRob3I6ICJKYWNvYiBGYXJtZXIiDQpkYXRlOiAiMjAyNi0wOC0zMSINCm91dHB1dDoNCiAgaHRtbF9kb2N1bWVudDogDQogICAgdG9jOiB0cnVlDQogICAgdG9jX2Zsb2F0OiB0cnVlDQogICAgbnVtYmVyX3NlY3Rpb25zOiB0cnVlDQogICAgY29kZV9kb3dubG9hZDogdHJ1ZQ0KICAgIGNvZGVfZm9sZGluZzogc2hvdw0KLS0tDQoNCmBgYHtyIHNldHVwLCBpbmNsdWRlPUZBTFNFfQ0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGVjaG8gPSBUUlVFKQ0KYGBgDQoNCiMgQ2luY3kgQ3Jhc2ggRGF0YQ0KDQpgYGB7ciBjaW5jeV9jcmFzaGVzfQ0KY3Jhc2hlc19wZXJfZGF5ID0gMzAxMjUgLyAzNjUNCmNyYXNoZXNfcGVyX2RheQ0KDQpjcmFzaGVzX2J5X2RheSA9IGMoMjAyMCwgMjI0MSwgMjMyNywgMjI4NSwNCiAgICAgICAgICAgICAgICAgICAyMzgwLCAxODY2LCAxNjY0KQ0KbmFtZXMoY3Jhc2hlc19ieV9kYXkpID0gYygiTW9uIiwgIlR1ZSIsICJXZWQiLCAiVGh1IiwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgIkZyaSIsICJTYXQiLCAiU3VuIikNCmNyYXNoZXNfYnlfZGF5DQoNCmNyYXNoZXNfYnlfZGF5ID4gMjEwMA0KYGBgDQoNCiMjIFR5cGUgb2YgYGNyYXNoZXNfYnlfZGF5YA0KDQpgYGB7ciB0eXBlb2ZfdmVjfQ0KdHlwZW9mKGNyYXNoZXNfYnlfZGF5KQ0KYGBg</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkNsYXNzIDA0IC0gRGF0YSBJbXBvcnQgJiBFeHBvcnQiDQpkYXRlOiAiMjAyNi0wOS0wMiINCm91dHB1dDoNCiAgaHRtbF9kb2N1bWVudDogDQogICAgdG9jOiB0cnVlDQogICAgdG9jX2Zsb2F0OiB0cnVlDQogICAgbnVtYmVyX3NlY3Rpb25zOiB0cnVlDQogICAgY29kZV9kb3dubG9hZDogdHJ1ZQ0KICAgIGNvZGVfZm9sZGluZzogc2hvdw0KLS0tDQoNCmBgYHtyIHNldHVwLCBpbmNsdWRlPUZBTFNFfQ0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGVjaG8gPSBUUlVFKQ0KYGBgDQoNCiMgRGF0YSBGcmFtZXMNCmBgYHtyfQ0KY3Jhc2hlc19ieV9kYXkgPSBjKDIwMjAsIDIyNDEsIDIzMjcsIDIyODUsIDIzODAsIDE4NjYsIDE2NjQpDQpuYW1lcyhjcmFzaGVzX2J5X2RheSkgPSBjKCJNb24iLCAiVHVlIiwgIldlZCIsICJUaHUiLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAiRnJpIiwgIlNhdCIsICJTdW4iKQ0KDQpjcmFzaGVzX2RmID0gdGliYmxlOjp0aWJibGUoDQogIGRheSAgICAgPSBuYW1lcyhjcmFzaGVzX2J5X2RheSksDQogIGNyYXNoZXMgPSBjcmFzaGVzX2J5X2RheSwNCiAgYnVzeSAgICA9IGNyYXNoZXNfYnlfZGF5ID4gMjAwMA0KKQ0KY3Jhc2hlc19kZg0KDQpkcGx5cjo6Z2xpbXBzZShjcmFzaGVzX2RmKSAjIGVxdWl2YWxlbnQgb2Ygc3RyKCkNCmBgYA0KDQpgYGB7cn0NCmpvYiA9IGxpc3QoDQogIHRpdGxlICAgPSAiUmVzZWFyY2ggRGF0YSBTY2llbnRpc3QsIE1hZ2ljIEV5ZSIsDQogIGNvbXBhbnkgPSAiR29vZ2xlIiwNCiAgc2FsYXJ5ICA9IGxpc3QobWluID0gMTQ3MDAwLCBtYXggPSAyMTAwMDApDQopDQpzdHIoam9iKQ0KDQpkcGx5cjo6Z2xpbXBzZShqb2IpDQoNCiMgMS4gVGhlIGNvbXBhbnkgbmFtZQ0KY29tcGFueV9uYW1lID0gam9iJGNvbXBhbnkNCmNvbXBhbnlfbmFtZQ0KDQpqb2JbWzJdXQ0KDQojIDIuIFRoZSBtYXhpbXVtIHNhbGFyeS4NCm1heF9zYWxhcnkgPSBqb2Ikc2FsYXJ5WzJdDQptYXhfc2FsYXJ5DQoNCm1heF9zYWxhcnlfYWdhaW4gPC0gam9iJHNhbGFyeSRtYXgNCg0KIyAzLiBUaGUgbWF4aW11bSBzYWxhcnkgYWdhaW4sIHVzaW5nIG9ubHkgW1sgXV0uDQpqb2JbWzNdXVtbMl1dDQoNCiMgNC4gVGhlIG5hbWVzIG9mIHRoZSBlbGVtZW50cyBpbiBqb2IuDQpuYW1lcyhqb2IpDQoNCmBgYA0KDQojIFZlY3RvcnMNCg0KDQotIFlvdSBjYW4gc3Vic2V0IGJ5IHBvc2l0aW9uIChpLmUuLCBhIG51bWJlcikgb3IgYnkgbmFtZSBpZiBpdCBpcyBhIG5hbWVkIHZlY3RvcjsNCi0gWW91IGNhbiBhbHNvIHBhc3MgYSB2ZWN0b3IgKGUuZy4sIGxvZ2ljYWwgY29uZGl0aW9uLCAyOjQsIG9yIGMoLCkgKSBmb3Igc3Vic2V0dGluZyB0aGUgdmVjdG9yDQoNCmBgYHtyfQ0KY3Jhc2hlc19ieV9kYXkgPSBjKDIwMjAsIDIyNDEsIDIzMjcsIDIyODUsIDIzODAsIDE4NjYsIDE2NjQpDQpuYW1lcyhjcmFzaGVzX2J5X2RheSkgPSBjKCJNb24iLCAiVHVlIiwgIldlZCIsICJUaHUiLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAiRnJpIiwgIlNhdCIsICJTdW4iKQ0KDQpjcmFzaGVzX2J5X2RheVsyOjRdDQpjcmFzaGVzX2J5X2RheVtjKCdNb24nLCdGcmknKV0gIyBjcmFzaGVzX2J5X2RheVtjKDEsNSldDQoNCmBgYA0KDQpgYGB7ciBqb2JzfQ0Kb2hfam9icyA9IHJlYWRyOjpyZWFkX2NzdigNCiAgZmlsZT0iaHR0cHM6Ly9mcmVkLnN0bG91aXNmZWQub3JnL2dyYXBoL2ZyZWRncmFwaC5jc3Y/Ymdjb2xvcj0lMjNlYmYzZmImY2hhcnRfdHlwZT1saW5lJmRycD0wJmZvPW9wZW4lMjBzYW5zJmdyYXBoX2JnY29sb3I9JTIzZmZmZmZmJmhlaWdodD00NTAmbW9kZT1mcmVkJnJlY2Vzc2lvbl9iYXJzPW9uJnR4dGNvbG9yPSUyMzQ0NDQ0NCZ0cz0xMiZ0dHM9MTImd2lkdGg9MTMyMCZudD0wJnRodT0wJnRyYz0wJnNob3dfbGVnZW5kPXllcyZzaG93X2F4aXNfdGl0bGVzPXllcyZzaG93X3Rvb2x0aXA9eWVzJmlkPUlITElEWFVTT0gmc2NhbGU9bGVmdCZjb3NkPTIwMjEtMDgtMjgmY29lZD0yMDI2LTA4LTI4JmxpbmVfY29sb3I9JTIzMDA3M2U2JmxpbmtfdmFsdWVzPWZhbHNlJmxpbmVfc3R5bGU9c29saWQmbWFya190eXBlPW5vbmUmbXc9MyZsdz0zJm9zdD0tOTk5OTkmb2V0PTk5OTk5Jm1tYT0wJmZtbD1hJmZxPURhaWx5JTJDJTIwNy1EYXkmZmFtPWF2ZyZmZ3N0PWxpbiZmZ3NuZD0yMDIwLTAyLTAxJmxpbmVfaW5kZXg9MSZ0cmFuc2Zvcm1hdGlvbj1saW4mdmludGFnZV9kYXRlPTIwMjYtMDktMDImcmV2aXNpb25fZGF0ZT0yMDI2LTA5LTAyJm5kPTIwMjAtMDItMDEiDQopDQoNCmRwbHlyOjpnbGltcHNlKG9oX2pvYnMpDQpgYGA=</div>
 
 
 </div>
@@ -1655,7 +1733,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("03_r_basics.Rmd");
+  window.initializeSourceEmbed("Class 04.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
