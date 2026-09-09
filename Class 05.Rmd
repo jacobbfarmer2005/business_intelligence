@@ -1,0 +1,91 @@
+---
+title: "Class 05"
+author: "Jacob Farmer"
+date: "2026-09-09"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    numbered_sections: true
+    code_download: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Game 01: Subsetting Lists
+
+```{r}
+campus = jsonlite::fromJSON(
+  "https://isa401-find-your-seat.vercel.app/campus.json")
+```
+
+#### Level 1
+```{r}
+names(campus$Farmer)
+fsb = campus$Farmer
+
+names(fsb)
+fsb$code
+```
+
+#### Level 2
+```{r}
+campus$Farmer$floors$`2`$sections
+```
+
+#### Level 3
+```{r}
+campus$Farmer$floors$`2`$rooms
+```
+
+#### Game 1 Answers
+```{r}
+campus[["Farmer"]]$code                     # "MUFSB"
+campus$Farmer$floors[["2"]]$sections        # 80
+r = campus$Farmer$floors[["2"]]$rooms
+r$isa_sections[r$room == "2050"]            # 11
+```
+
+## Reading Excel Files
+```{r occupations}
+occupation <- readxl::read_excel(
+  path = "data/occupation.xlsx", 
+  sheet = 5)
+
+# when subsetting in R a "-" drops items.
+# given we are dropping multiple (3) rows, we put them in a vector. Notice the comma after the parenthesis, keeps all columns
+occupation = occupation[-c(32,33,34), ]
+# or
+occupation = occupation[1:31, ]
+```
+
+## Read JSON Data
+```{r read_json}
+json_url = 
+  "https://data.cincinnati-oh.gov/resource/rvmt-pkmq.json?$limit=100"
+
+crashes_json = jsonlite::fromJSON(json_url)
+dplyr::glimpse(
+  crashes_json[, c("crashdate", "dayofweek",
+                   "crashseverity", "age")])
+```
+
+## Game 02: Data Import
+```{r}
+logins = readr::read_csv("https://isa401-import-heist.vercel.app/api/stage1")
+
+names(logins)
+failed_logins <- c(logins$failed_attempts)
+names(failed_logins) <- c(logins$account)
+failed_logins
+
+log = jsonlite::fromJSON("https://isa401-import-heist.vercel.app/api/stage2?key=smithj31&seat=R1-1&s=B")
+names(log)
+log$events$action
+
+jsonlite::fromJSON("https://isa401-import-heist.vercel.app/api/finish?code=6&seat=R1-1&s=B")
+
+```

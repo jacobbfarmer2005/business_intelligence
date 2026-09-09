@@ -1,0 +1,39 @@
+---
+title: "Class 05"
+author: "Jacob Farmer"
+date: "2026-09-09"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    numbered_sections: true
+    code_download: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Game 01: Subsetting Lists
+
+```{r}
+campus = jsonlite::fromJSON(
+  "https://isa401-find-your-seat.vercel.app/campus.json")
+```
+
+#### Level 1
+```{r}
+names(campus$Farmer)
+campus$Farmer$code
+```
+
+#### Level 2
+```{r}
+campus$Farmer$floors$`2`$sections
+```
+
+#### Level 3
+```{r}
+campus$Farmer$floors$`2`$rooms
+```
