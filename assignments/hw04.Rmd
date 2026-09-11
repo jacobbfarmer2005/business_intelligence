@@ -1,0 +1,46 @@
+---
+title: "Homework 04"
+author: "Jacob Farmer"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+```{r}
+con = DBI::dbConnect(RSQLite::SQLite(), "data/midwest_airbnb.db")
+listings = DBI::dbReadTable(con, "listings")
+```
+
+```{r}
+nrow(listings)
+```
+
+## Question 2
+```{r}
+sum(listings$city == "Columbus")
+```
+
+## Question 3
+```{r}
+chicago_listings <- listings[listings$city == "Chicago", ]
+chicago_listings$name[which.max(chicago_listings$price)]
+```
+
+## Question 4
+```{r}
+length(unique(chicago_listings$neighbourhood))
+```
+
+## Question 5
+```{r}
+sum(listings$host_is_superhost == "t", na.rm = TRUE)
+```
+
+## Question 6
+```{r}
+sum(listings$price > 1000)
+```

@@ -1598,12 +1598,17 @@ border-radius: 0px;
 <h2>Game 01: Subsetting Lists</h2>
 <pre class="r"><code>campus = jsonlite::fromJSON(
   &quot;https://isa401-find-your-seat.vercel.app/campus.json&quot;)</code></pre>
-<div id="evel-1" class="section level4">
-<h4>:evel 1</h4>
+<div id="level-1" class="section level4">
+<h4>Level 1</h4>
 <pre class="r"><code>names(campus$Farmer)</code></pre>
 <pre><code>## [1] &quot;name&quot;         &quot;code&quot;         &quot;address&quot;      &quot;opened&quot;       &quot;source&quot;      
 ## [6] &quot;photo_credit&quot; &quot;rooms_source&quot; &quot;floors&quot;</code></pre>
-<pre class="r"><code>campus$Farmer$code</code></pre>
+<pre class="r"><code>fsb = campus$Farmer
+
+names(fsb)</code></pre>
+<pre><code>## [1] &quot;name&quot;         &quot;code&quot;         &quot;address&quot;      &quot;opened&quot;       &quot;source&quot;      
+## [6] &quot;photo_credit&quot; &quot;rooms_source&quot; &quot;floors&quot;</code></pre>
+<pre class="r"><code>fsb$code</code></pre>
 <pre><code>## [1] &quot;MUFSB&quot;</code></pre>
 </div>
 <div id="level-2" class="section level4">
@@ -1622,9 +1627,135 @@ border-radius: 0px;
 ## 5 2049            0           16            3
 ## 6 2050           11           11            1</code></pre>
 </div>
+<div id="game-1-answers" class="section level4">
+<h4>Game 1 Answers</h4>
+<pre class="r"><code>campus[[&quot;Farmer&quot;]]$code                     # &quot;MUFSB&quot;</code></pre>
+<pre><code>## [1] &quot;MUFSB&quot;</code></pre>
+<pre class="r"><code>campus$Farmer$floors[[&quot;2&quot;]]$sections        # 80</code></pre>
+<pre><code>## [1] 80</code></pre>
+<pre class="r"><code>r = campus$Farmer$floors[[&quot;2&quot;]]$rooms
+r$isa_sections[r$room == &quot;2050&quot;]            # 11</code></pre>
+<pre><code>## [1] 11</code></pre>
+</div>
+</div>
+<div id="reading-excel-files" class="section level2">
+<h2>Reading Excel Files</h2>
+<pre class="r"><code>occupation &lt;- readxl::read_excel(
+  path = &quot;data/occupation.xlsx&quot;, 
+  sheet = 5)</code></pre>
+<pre><code>## New names:
+## • `` -&gt; `...2`
+## • `` -&gt; `...3`
+## • `` -&gt; `...4`
+## • `` -&gt; `...5`
+## • `` -&gt; `...6`
+## • `` -&gt; `...7`</code></pre>
+<pre class="r"><code># when subsetting in R a &quot;-&quot; drops items.
+# given we are dropping multiple (3) rows, we put them in a vector. Notice the comma after the parenthesis, keeps all columns
+occupation = occupation[-c(32,33,34), ]
+# or
+occupation = occupation[1:31, ]</code></pre>
+</div>
+<div id="read-json-data" class="section level2">
+<h2>Read JSON Data</h2>
+<pre class="r"><code>json_url = 
+  &quot;https://data.cincinnati-oh.gov/resource/rvmt-pkmq.json?$limit=100&quot;
+
+crashes_json = jsonlite::fromJSON(json_url)
+dplyr::glimpse(
+  crashes_json[, c(&quot;crashdate&quot;, &quot;dayofweek&quot;,
+                   &quot;crashseverity&quot;, &quot;age&quot;)])</code></pre>
+<pre><code>## Rows: 100
+## Columns: 4
+## $ crashdate     &lt;chr&gt; &quot;2026-08-21T01:00:00.000&quot;, &quot;2026-08-23T03:50:00.000&quot;, &quot;2…
+## $ dayofweek     &lt;chr&gt; &quot;FRI&quot;, &quot;SUN&quot;, &quot;SUN&quot;, &quot;SUN&quot;, &quot;SUN&quot;, &quot;SUN&quot;, &quot;SUN&quot;, &quot;SUN&quot;, …
+## $ crashseverity &lt;chr&gt; &quot;5 - PROPERTY DAMAGE ONLY&quot;, &quot;5 - PROPERTY DAMAGE ONLY&quot;, …
+## $ age           &lt;chr&gt; NA, &quot;46&quot;, &quot;44&quot;, &quot;21&quot;, &quot;30&quot;, &quot;30&quot;, &quot;19&quot;, &quot;17&quot;, NA, &quot;24&quot;, …</code></pre>
+</div>
+<div id="game-02-data-import" class="section level2">
+<h2>Game 02: Data Import</h2>
+<pre class="r"><code>logins = readr::read_csv(&quot;https://isa401-import-heist.vercel.app/api/stage1&quot;)</code></pre>
+<pre><code>## Rows: 7 Columns: 6
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr  (4): account, country, source_ip, mfa
+## dbl  (1): failed_attempts
+## dttm (1): sign_in_time
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>names(logins)</code></pre>
+<pre><code>## [1] &quot;account&quot;         &quot;sign_in_time&quot;    &quot;country&quot;         &quot;source_ip&quot;      
+## [5] &quot;failed_attempts&quot; &quot;mfa&quot;</code></pre>
+<pre class="r"><code>failed_logins &lt;- c(logins$failed_attempts)
+names(failed_logins) &lt;- c(logins$account)
+failed_logins</code></pre>
+<pre><code>##   hallm7  patelr2   chenw4 oconnork nguyent9 smithj31 garciad5 
+##        0        1        0        2        0       17        1</code></pre>
+<pre class="r"><code>log = jsonlite::fromJSON(&quot;https://isa401-import-heist.vercel.app/api/stage2?key=smithj31&amp;seat=R1-1&amp;s=B&quot;)
+names(log)</code></pre>
+<pre><code>## [1] &quot;status&quot;   &quot;account&quot;  &quot;briefing&quot; &quot;session&quot;  &quot;events&quot;</code></pre>
+<pre class="r"><code>log$events$action</code></pre>
+<pre><code>##  [1] &quot;VIEW&quot;      &quot;VIEW&quot;      &quot;DOWNLOAD&quot;  &quot;VIEW&quot;      &quot;DOWNLOAD&quot;  &quot;DOWNLOAD&quot; 
+##  [7] &quot;VIEW&quot;      &quot;VIEW&quot;      &quot;DOWNLOAD&quot;  &quot;VIEW&quot;      &quot;DOWNLOAD&quot;  &quot;VIEW&quot;     
+## [13] &quot;DOWNLOAD&quot;  &quot;VIEW&quot;      &quot;VIEW&quot;      &quot;OVERWRITE&quot;</code></pre>
+<pre class="r"><code>jsonlite::fromJSON(&quot;https://isa401-import-heist.vercel.app/api/finish?code=6&amp;seat=R1-1&amp;s=B&quot;)</code></pre>
+<pre><code>## $status
+## [1] &quot;CLEARED&quot;
+## 
+## $verdict
+## [1] &quot;Account smithj31 was compromised by password guessing (17 failed attempts, then a successful sign-in from Romania at 02:31 without MFA). In the next 27 minutes, 6 files (28.1 MB) were downloaded from the FSB shared drive, including payroll, an employee roster, and survey responses with PII, and fsb_shared/README.txt was overwritten at 02:57 (restored from the drive&#39;s version history).&quot;
+## 
+## $report
+## $report$incident
+## [1] &quot;INC-2026-0902&quot;
+## 
+## $report$compromised_account
+## [1] &quot;smithj31&quot;
+## 
+## $report$attack
+## [1] &quot;password guessing (17 failed attempts before success)&quot;
+## 
+## $report$source_country
+## [1] &quot;Romania&quot;
+## 
+## $report$source_ip
+## [1] &quot;203.0.113.57&quot;
+## 
+## $report$mfa_used
+## [1] &quot;no&quot;
+## 
+## $report$session_window
+## [1] &quot;02:31 to 02:58&quot;
+## 
+## $report$files_downloaded
+## [1] 6
+## 
+## $report$data_downloaded_mb
+## [1] 28.1
+## 
+## $report$highest_risk_file
+## [1] &quot;fsb_shared/research/survey_responses_pii.csv&quot;
+## 
+## $report$files_overwritten
+## [1] 1
+## 
+## 
+## $containment
+## [1] &quot;Disable smithj31 and reset its credentials&quot;                                   
+## [2] &quot;Require MFA on every VPN sign-in&quot;                                             
+## [3] &quot;Notify the owners of the 6 downloaded files, starting with the PII export&quot;    
+## [4] &quot;Block the source address 203.0.113.57 and review sign-ins from outside the US&quot;
+## [5] &quot;Restore fsb_shared/README.txt from version history (overwritten at 02:57)&quot;    
+## 
+## $replay
+## [1] &quot;https://isa401-import-heist.vercel.app/replay&quot;
+## 
+## $message
+## [1] &quot;Incident closed. Open the replay address above in your browser to watch the incident unfold from the two files you imported, then look up: your seat is lit red on the projector board.&quot;</code></pre>
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkNsYXNzIDA1Ig0KYXV0aG9yOiAiSmFjb2IgRmFybWVyIg0KZGF0ZTogIjIwMjYtMDktMDkiDQpvdXRwdXQ6IA0KICBodG1sX2RvY3VtZW50Og0KICAgIHRvYzogdHJ1ZQ0KICAgIHRvY19mbG9hdDogdHJ1ZQ0KICAgIG51bWJlcmVkX3NlY3Rpb25zOiB0cnVlDQogICAgY29kZV9kb3dubG9hZDogdHJ1ZQ0KICAgIGNvZGVfZm9sZGluZzogc2hvdw0KLS0tDQoNCmBgYHtyIHNldHVwLCBpbmNsdWRlPUZBTFNFfQ0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGVjaG8gPSBUUlVFKQ0KYGBgDQoNCiMjIEdhbWUgMDE6IFN1YnNldHRpbmcgTGlzdHMNCg0KYGBge3J9DQpjYW1wdXMgPSBqc29ubGl0ZTo6ZnJvbUpTT04oDQogICJodHRwczovL2lzYTQwMS1maW5kLXlvdXItc2VhdC52ZXJjZWwuYXBwL2NhbXB1cy5qc29uIikNCmBgYA0KDQojIyMjIDpldmVsIDENCmBgYHtyfQ0KbmFtZXMoY2FtcHVzJEZhcm1lcikNCmNhbXB1cyRGYXJtZXIkY29kZQ0KYGBgDQoNCiMjIyMgTGV2ZWwgMg0KYGBge3J9DQpjYW1wdXMkRmFybWVyJGZsb29ycyRgMmAkc2VjdGlvbnMNCmBgYA0KDQojIyMjIExldmVsIDMNCmBgYHtyfQ0KY2FtcHVzJEZhcm1lciRmbG9vcnMkYDJgJHJvb21zDQpgYGA=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkNsYXNzIDA1Ig0KYXV0aG9yOiAiSmFjb2IgRmFybWVyIg0KZGF0ZTogIjIwMjYtMDktMDkiDQpvdXRwdXQ6IA0KICBodG1sX2RvY3VtZW50Og0KICAgIHRvYzogdHJ1ZQ0KICAgIHRvY19mbG9hdDogdHJ1ZQ0KICAgIG51bWJlcmVkX3NlY3Rpb25zOiB0cnVlDQogICAgY29kZV9kb3dubG9hZDogdHJ1ZQ0KICAgIGNvZGVfZm9sZGluZzogc2hvdw0KLS0tDQoNCmBgYHtyIHNldHVwLCBpbmNsdWRlPUZBTFNFfQ0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGVjaG8gPSBUUlVFKQ0KYGBgDQoNCiMjIEdhbWUgMDE6IFN1YnNldHRpbmcgTGlzdHMNCg0KYGBge3J9DQpjYW1wdXMgPSBqc29ubGl0ZTo6ZnJvbUpTT04oDQogICJodHRwczovL2lzYTQwMS1maW5kLXlvdXItc2VhdC52ZXJjZWwuYXBwL2NhbXB1cy5qc29uIikNCmBgYA0KDQojIyMjIExldmVsIDENCmBgYHtyfQ0KbmFtZXMoY2FtcHVzJEZhcm1lcikNCmZzYiA9IGNhbXB1cyRGYXJtZXINCg0KbmFtZXMoZnNiKQ0KZnNiJGNvZGUNCmBgYA0KDQojIyMjIExldmVsIDINCmBgYHtyfQ0KY2FtcHVzJEZhcm1lciRmbG9vcnMkYDJgJHNlY3Rpb25zDQpgYGANCg0KIyMjIyBMZXZlbCAzDQpgYGB7cn0NCmNhbXB1cyRGYXJtZXIkZmxvb3JzJGAyYCRyb29tcw0KYGBgDQoNCiMjIyMgR2FtZSAxIEFuc3dlcnMNCmBgYHtyfQ0KY2FtcHVzW1siRmFybWVyIl1dJGNvZGUgICAgICAgICAgICAgICAgICAgICAjICJNVUZTQiINCmNhbXB1cyRGYXJtZXIkZmxvb3JzW1siMiJdXSRzZWN0aW9ucyAgICAgICAgIyA4MA0KciA9IGNhbXB1cyRGYXJtZXIkZmxvb3JzW1siMiJdXSRyb29tcw0KciRpc2Ffc2VjdGlvbnNbciRyb29tID09ICIyMDUwIl0gICAgICAgICAgICAjIDExDQpgYGANCg0KIyMgUmVhZGluZyBFeGNlbCBGaWxlcw0KYGBge3Igb2NjdXBhdGlvbnN9DQpvY2N1cGF0aW9uIDwtIHJlYWR4bDo6cmVhZF9leGNlbCgNCiAgcGF0aCA9ICJkYXRhL29jY3VwYXRpb24ueGxzeCIsIA0KICBzaGVldCA9IDUpDQoNCiMgd2hlbiBzdWJzZXR0aW5nIGluIFIgYSAiLSIgZHJvcHMgaXRlbXMuDQojIGdpdmVuIHdlIGFyZSBkcm9wcGluZyBtdWx0aXBsZSAoMykgcm93cywgd2UgcHV0IHRoZW0gaW4gYSB2ZWN0b3IuIE5vdGljZSB0aGUgY29tbWEgYWZ0ZXIgdGhlIHBhcmVudGhlc2lzLCBrZWVwcyBhbGwgY29sdW1ucw0Kb2NjdXBhdGlvbiA9IG9jY3VwYXRpb25bLWMoMzIsMzMsMzQpLCBdDQojIG9yDQpvY2N1cGF0aW9uID0gb2NjdXBhdGlvblsxOjMxLCBdDQpgYGANCg0KIyMgUmVhZCBKU09OIERhdGENCmBgYHtyIHJlYWRfanNvbn0NCmpzb25fdXJsID0gDQogICJodHRwczovL2RhdGEuY2luY2lubmF0aS1vaC5nb3YvcmVzb3VyY2UvcnZtdC1wa21xLmpzb24/JGxpbWl0PTEwMCINCg0KY3Jhc2hlc19qc29uID0ganNvbmxpdGU6OmZyb21KU09OKGpzb25fdXJsKQ0KZHBseXI6OmdsaW1wc2UoDQogIGNyYXNoZXNfanNvblssIGMoImNyYXNoZGF0ZSIsICJkYXlvZndlZWsiLA0KICAgICAgICAgICAgICAgICAgICJjcmFzaHNldmVyaXR5IiwgImFnZSIpXSkNCmBgYA0KDQojIyBHYW1lIDAyOiBEYXRhIEltcG9ydA0KYGBge3J9DQpsb2dpbnMgPSByZWFkcjo6cmVhZF9jc3YoImh0dHBzOi8vaXNhNDAxLWltcG9ydC1oZWlzdC52ZXJjZWwuYXBwL2FwaS9zdGFnZTEiKQ0KDQpuYW1lcyhsb2dpbnMpDQpmYWlsZWRfbG9naW5zIDwtIGMobG9naW5zJGZhaWxlZF9hdHRlbXB0cykNCm5hbWVzKGZhaWxlZF9sb2dpbnMpIDwtIGMobG9naW5zJGFjY291bnQpDQpmYWlsZWRfbG9naW5zDQoNCmxvZyA9IGpzb25saXRlOjpmcm9tSlNPTigiaHR0cHM6Ly9pc2E0MDEtaW1wb3J0LWhlaXN0LnZlcmNlbC5hcHAvYXBpL3N0YWdlMj9rZXk9c21pdGhqMzEmc2VhdD1SMS0xJnM9QiIpDQpuYW1lcyhsb2cpDQpsb2ckZXZlbnRzJGFjdGlvbg0KDQpqc29ubGl0ZTo6ZnJvbUpTT04oImh0dHBzOi8vaXNhNDAxLWltcG9ydC1oZWlzdC52ZXJjZWwuYXBwL2FwaS9maW5pc2g/Y29kZT02JnNlYXQ9UjEtMSZzPUIiKQ0KDQpgYGANCg==</div>
 
 
 </div>
