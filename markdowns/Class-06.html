@@ -1620,9 +1620,52 @@ border-radius: 0px;
 ## $ reached_at &lt;dttm&gt; 2026-09-09 12:26:18, 2026-09-09 12:35:06, 2026-09-09 12:35…
 ## $ seconds    &lt;dbl&gt; 0, 529, 534, 540, 541, 547, 548, 550, 550, 551, 552, 554, 5…
 ## $ rank       &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</code></pre>
+<div id="lecture-content" class="section level3">
+<h3>Lecture Content</h3>
+<pre class="r"><code>con = DBI::dbConnect(RSQLite::SQLite(),
+                     &quot;../data/scout.db&quot;)
+DBI::dbListTables(con)</code></pre>
+<pre><code>## [1] &quot;scout_postings&quot; &quot;scout_runs&quot;</code></pre>
+<pre class="r"><code>postings = DBI::dbReadTable(con, &quot;scout_postings&quot;)
+DBI::dbDisconnect(con)
+dplyr::glimpse(postings[, c(&quot;title&quot;, &quot;company&quot;,
+  &quot;location_state&quot;, &quot;remote&quot;, &quot;skills_json&quot;)])</code></pre>
+<pre><code>## Rows: 1,891
+## Columns: 5
+## $ title          &lt;chr&gt; &quot;Data Analyst - Remote&quot;, &quot;Business Analyst / Product Ow…
+## $ company        &lt;chr&gt; &quot;UnitedHealth Group&quot;, &quot;Anza Mortgage Insurance Corporat…
+## $ location_state &lt;chr&gt; &quot;GA&quot;, &quot;NC&quot;, &quot;TX&quot;, &quot;CA&quot;, &quot;TX&quot;, &quot;NC&quot;, &quot;IL&quot;, &quot;GA&quot;, &quot;IN&quot;, &quot;…
+## $ remote         &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0…
+## $ skills_json    &lt;chr&gt; &quot;[{\&quot;skillId\&quot;:\&quot;sql\&quot;,\&quot;importance\&quot;:\&quot;required\&quot;},{\&quot;…</code></pre>
+<div id="sql-in-r" class="section level4">
+<h4>SQL in R</h4>
+<pre class="r"><code>con = DBI::dbConnect(RSQLite::SQLite(),
+                     &quot;../data/scout.db&quot;)
+top_remote = DBI::dbGetQuery(con, &quot;
+  SELECT company, COUNT(*) AS n
+  FROM scout_postings
+  WHERE remote = 1
+  GROUP BY company
+  ORDER BY n DESC
+  LIMIT 10&quot;)
+DBI::dbDisconnect(con)
+top_remote</code></pre>
+<pre><code>##                      company n
+## 1             The Home Depot 5
+## 2  Gainwell Technologies LLC 5
+## 3                   Jerry.ai 4
+## 4          Burjline Builders 4
+## 5                 TEKsystems 3
+## 6                 OhioHealth 3
+## 7        Centene Corporation 3
+## 8                    Zest AI 2
+## 9         UnitedHealth Group 2
+## 10 TRILLIUM HEALTH RESOURCES 2</code></pre>
+</div>
+</div>
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkNsYXNzIDA2Ig0KYXV0aG9yOiAiSmFjb2IgRmFybWVyIg0KZGF0ZTogIjIwMjYtMDktMTQiDQpvdXRwdXQ6IA0KICBodG1sX2RvY3VtZW50Og0KICAgIHRvYzogdHJ1ZQ0KICAgIHRvY19mbG9hdDogdHJ1ZQ0KICAgIG51bWJlcmVkX3NlY3Rpb25zOiB0cnVlDQogICAgY29kZV9kb3dubG9hZDogdHJ1ZQ0KICAgIGNvZGVfZm9sZGluZzogc2hvdw0KLS0tDQoNCmBgYHtyIHNldHVwLCBpbmNsdWRlPUZBTFNFfQ0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGVjaG8gPSBUUlVFKQ0KYGBgDQoNCiMjIEthaG9vdCBHYW1lDQpgYGB7cn0NCnJ1biA9IHJlYWRyOjpyZWFkX2NzdigNCiAgImh0dHBzOi8vaXNhNDAxLWZpbmQteW91ci1zZWF0LnZlcmNlbC5hcHAvYXBpL2V4cG9ydD9zZWN0aW9uPUEmcnVuPTEzIikNCmRwbHlyOjpnbGltcHNlKHJ1bikNCmBgYA==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkNsYXNzIDA2Ig0KYXV0aG9yOiAiSmFjb2IgRmFybWVyIg0KZGF0ZTogIjIwMjYtMDktMTQiDQpvdXRwdXQ6IA0KICBodG1sX2RvY3VtZW50Og0KICAgIHRvYzogdHJ1ZQ0KICAgIHRvY19mbG9hdDogdHJ1ZQ0KICAgIG51bWJlcmVkX3NlY3Rpb25zOiB0cnVlDQogICAgY29kZV9kb3dubG9hZDogdHJ1ZQ0KICAgIGNvZGVfZm9sZGluZzogc2hvdw0KLS0tDQoNCmBgYHtyIHNldHVwLCBpbmNsdWRlPUZBTFNFfQ0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGVjaG8gPSBUUlVFKQ0KYGBgDQoNCiMjIEthaG9vdCBHYW1lDQpgYGB7cn0NCnJ1biA9IHJlYWRyOjpyZWFkX2NzdigNCiAgImh0dHBzOi8vaXNhNDAxLWZpbmQteW91ci1zZWF0LnZlcmNlbC5hcHAvYXBpL2V4cG9ydD9zZWN0aW9uPUEmcnVuPTEzIikNCmRwbHlyOjpnbGltcHNlKHJ1bikNCmBgYA0KDQojIyMgTGVjdHVyZSBDb250ZW50DQpgYGB7ciBydW5uaW5nIHRoZSBkYXRhfQ0KY29uID0gREJJOjpkYkNvbm5lY3QoUlNRTGl0ZTo6U1FMaXRlKCksDQogICAgICAgICAgICAgICAgICAgICAiLi4vZGF0YS9zY291dC5kYiIpDQpEQkk6OmRiTGlzdFRhYmxlcyhjb24pDQpwb3N0aW5ncyA9IERCSTo6ZGJSZWFkVGFibGUoY29uLCAic2NvdXRfcG9zdGluZ3MiKQ0KREJJOjpkYkRpc2Nvbm5lY3QoY29uKQ0KZHBseXI6OmdsaW1wc2UocG9zdGluZ3NbLCBjKCJ0aXRsZSIsICJjb21wYW55IiwNCiAgImxvY2F0aW9uX3N0YXRlIiwgInJlbW90ZSIsICJza2lsbHNfanNvbiIpXSkNCmBgYA0KDQojIyMjIFNRTCBpbiBSDQpgYGB7ciBydW5uaW5nIFNRTCBpbiByfQ0KY29uID0gREJJOjpkYkNvbm5lY3QoUlNRTGl0ZTo6U1FMaXRlKCksDQogICAgICAgICAgICAgICAgICAgICAiLi4vZGF0YS9zY291dC5kYiIpDQp0b3BfcmVtb3RlID0gREJJOjpkYkdldFF1ZXJ5KGNvbiwgIg0KICBTRUxFQ1QgY29tcGFueSwgQ09VTlQoKikgQVMgbg0KICBGUk9NIHNjb3V0X3Bvc3RpbmdzDQogIFdIRVJFIHJlbW90ZSA9IDENCiAgR1JPVVAgQlkgY29tcGFueQ0KICBPUkRFUiBCWSBuIERFU0MNCiAgTElNSVQgMTAiKQ0KREJJOjpkYkRpc2Nvbm5lY3QoY29uKQ0KdG9wX3JlbW90ZQ0KYGBgDQoNCg==</div>
 
 
 </div>

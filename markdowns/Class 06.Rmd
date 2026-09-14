@@ -21,3 +21,30 @@ run = readr::read_csv(
   "https://isa401-find-your-seat.vercel.app/api/export?section=A&run=13")
 dplyr::glimpse(run)
 ```
+
+### Lecture Content
+```{r running the data}
+con = DBI::dbConnect(RSQLite::SQLite(),
+                     "../data/scout.db")
+DBI::dbListTables(con)
+postings = DBI::dbReadTable(con, "scout_postings")
+DBI::dbDisconnect(con)
+dplyr::glimpse(postings[, c("title", "company",
+  "location_state", "remote", "skills_json")])
+```
+
+#### SQL in R
+```{r running SQL in r}
+con = DBI::dbConnect(RSQLite::SQLite(),
+                     "../data/scout.db")
+top_remote = DBI::dbGetQuery(con, "
+  SELECT company, COUNT(*) AS n
+  FROM scout_postings
+  WHERE remote = 1
+  GROUP BY company
+  ORDER BY n DESC
+  LIMIT 10")
+DBI::dbDisconnect(con)
+top_remote
+```
+
