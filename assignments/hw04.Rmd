@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Question 1
 ```{r}
-con = DBI::dbConnect(RSQLite::SQLite(), "data/midwest_airbnb.db")
+con = DBI::dbConnect(RSQLite::SQLite(), "../data/midwest_airbnb.db")
 listings = DBI::dbReadTable(con, "listings")
 ```
 
