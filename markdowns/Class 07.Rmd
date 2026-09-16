@@ -1,0 +1,62 @@
+---
+title: "Class 07"
+author: "Jacob Farmer"
+date: "2026-09-16"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    numbered_sections: true
+    code_download: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+```
+
+```{r}
+con = DBI::dbConnect(RSQLite::SQLite(), "../data/scout.db")
+postings = DBI::dbReadTable(con, "scout_postings") |> tibble::as_tibble()
+DBI::dbDisconnect(con)
+
+jobs = postings |>
+  dplyr::select(company, title, location_state, remote, category, posted_at, last_seen_at) |> 
+  dplyr::filter(remote == 1) |> 
+  dplyr::mutate(
+    days_open = as.numeric(as.Date(last_seen_at) - as.Date(posted_at))
+    )
+``` 
+
+
+## Demo
+```{r}
+con = DBI::dbConnect(RSQLite::SQLite(), "../data/scout.db")
+postings = DBI::dbReadTable(con, "scout_postings") |> tibble::as_tibble()
+DBI::dbDisconnect(con)
+
+jobs = postings |>
+  dplyr::select(company, title, location_state, remote, category, posted_at, last_seen_at) |>
+  dplyr::mutate(dplyr::across(dplyr::ends_with("_at"), as.Date),
+                days_open = as.numeric(last_seen_at - posted_at))
+
+jobs
+
+# Q1 -- Which cat is remote friendly?
+# To answer that use the logic as follows
+# - Find the number of jobs per category
+# - Normalize the number of remote jobs by dividing by the total jobs
+
+jobs |> 
+  # I want to move from unit of analysis being a job posting to a category:
+  dplyr::group_by(category) |> 
+  dplyr::summarise(
+    postings = dplyr::n(),
+    remote_share = mean(remote)
+  )
+```
+
