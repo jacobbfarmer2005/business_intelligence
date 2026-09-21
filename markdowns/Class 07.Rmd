@@ -58,5 +58,64 @@ jobs |>
     postings = dplyr::n(),
     remote_share = mean(remote)
   )
+
+# Among full-time postings, which states have the highest remote share?
+
+jobs |> 
+  dplyr::group_by(category, location_state) |> 
+  dplyr::summarise(
+    postings = dplyr::n(),
+    remote_share = mean(remote) |> round(digits = 2)
+  ) |> 
+  dplyr::arrange(dplyr::desc(remote_share)) |> 
+  na.omit() # drops the location_state == NA and and any other rows that contain NA
+
 ```
+
+
+
+## AirBnB
+```{r}
+con = DBI::dbConnect(RSQLite::SQLite(), "../data/midwest_airbnb.db")
+listings = DBI::dbReadTable(con, "listings") |>
+  tibble::as_tibble()
+DBI::dbDisconnect(con)
+dplyr::glimpse(listings)
+
+# 1. How many listings per city?
+listings |> 
+  dplyr::group_by(city) |> 
+  dplyr::summarise(count = dplyr::n())
+
+listings |> dplyr::count(city) # count does the group_by then n()
+
+# 2.  For entire homes (room_type == "Entire home/apt") that sleep four or more, what is the median price in each city?
+listings |> 
+  dplyr::filter(
+    room_type == "Entire home/apt" & accommodates >= 4
+  ) |> 
+  dplyr::group_by(city) |> 
+  dplyr::summarise(
+    median_price = median(price)
+  )
+
+# 3. Add price_per_person = price / accommodates. Which three listings are cheapest per person? Believe them?
+listings |> 
+  dplyr::mutate(price_per_person = price / accommodates) |> 
+  dplyr::select(city, host_name, name, price, accommodates, price_per_person) |> 
+  dplyr::arrange(price_per_person) |> 
+  tail(3)
+
+# 4. Which five host_names have the most listings?
+listings |> 
+  dplyr::count(host_name, sort = T)
+
+listings |> 
+  dplyr::count(host_name, host_id, sort = T)
+
+```
+
+
+
+
 
