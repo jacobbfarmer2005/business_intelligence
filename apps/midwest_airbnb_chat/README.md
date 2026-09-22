@@ -6,23 +6,25 @@ A twelve-line [querychat](https://github.com/posit-dev/querychat) app built in I
 
 **Live app:** https://midwest-airbnb-chat-9eak.onrender.com/
 
+
+
 * Which Columbus neighbourhood has the priciest entire homes?
 
-
+!\[Priciest Columbus neighborhood](screenshots/question1.png)
 
 * Do superhosts charge more per night than other hosts? Show it as a bar chart.
 
-
+!\[Superhost prices](screenshots/question2.png)
 
 * How many listings could host a party of ten?
 
-
+!\[Party of ten](screenshots/question3.png)
 
 \---
 
 ## What is this app?
 
-The app connects to a SQLite database (`data/scout.db`), hands the `scout\\\_postings` table to querychat, and lets an LLM translate your question into SQL. Every answer shows the query it ran, so you can check the logic and reuse the SQL yourself.
+The app connects to a SQLite database (`data/scout.db`), hands the `scout\\\\\\\_postings` table to querychat, and lets an LLM translate your question into SQL. Every answer shows the query it ran, so you can check the logic and reuse the SQL yourself.
 
 **Example queries:**
 
@@ -34,10 +36,10 @@ The app connects to a SQLite database (`data/scout.db`), hands the `scout\\\_pos
 
 ## Dataset Information
 
-**Dataset:** `scout\\\_postings` table in `data/scout.db` (1,891 rows, 19 columns)
+**Dataset:** `scout\\\\\\\_postings` table in `data/scout.db` (1,891 rows, 19 columns)
 **Source:** ChatISA Job Scout, which harvested the postings from public job boards between July 29 and August 23, 2026 (the `source` column records the board: `activejobs` or `usajobs`)
-**Data dictionary:** `data/data\\\_desc.md` (started in class; you complete it in Assignment 05)
-**Query rules for the LLM:** `data/extra\\\_instructions.md` (one starter rule; you add more)
+**Data dictionary:** `data/data\\\\\\\_desc.md` (started in class; you complete it in Assignment 05)
+**Query rules for the LLM:** `data/extra\\\\\\\_instructions.md` (one starter rule; you add more)
 
 ### Key Fields
 
@@ -45,8 +47,8 @@ The app connects to a SQLite database (`data/scout.db`), hands the `scout\\\_pos
 |-|-|
 |`title`|Job title as it appeared on the board|
 |`company`|Employer name|
-|`location\\\_city`|City of the posting (blank for 61 rows)|
-|`location\\\_state`|Two-letter state code (blank for 30 rows)|
+|`location\\\\\\\_city`|City of the posting (blank for 61 rows)|
+|`location\\\\\\\_state`|Two-letter state code (blank for 30 rows)|
 |`remote`|`1` if the posting is remote, `0` otherwise|
 |`category`|`fulltime`, `federal`, or `internship`|
 
@@ -57,10 +59,10 @@ The app connects to a SQLite database (`data/scout.db`), hands the `scout\\\_pos
 The app calls OpenAI (`gpt-5.6-luna (reasoning off)`) through [ellmer](https://ellmer.tidyverse.org/), so it needs one environment variable:
 
 ```bash
-export OPENAI\\\_API\\\_KEY="your-api-key-here"
+export OPENAI\\\\\\\_API\\\\\\\_KEY="your-api-key-here"
 ```
 
-On Hugging Face Spaces, add it under **Settings > Variables and secrets** as a secret named `OPENAI\\\_API\\\_KEY`. Never commit the key; `.Renviron` is listed in `.gitignore` for that reason.
+On Hugging Face Spaces, add it under **Settings > Variables and secrets** as a secret named `OPENAI\\\\\\\_API\\\\\\\_KEY`. Never commit the key; `.Renviron` is listed in `.gitignore` for that reason.
 
 \---
 
@@ -69,15 +71,15 @@ On Hugging Face Spaces, add it under **Settings > Variables and secrets** as a s
 **With R (4.6.0, querychat 0.3.0):**
 
 ```r
-# from inside apps/job\\\_scout\\\_chat/
+# from inside apps/job\\\\\\\_scout\\\\\\\_chat/
 shiny::runApp(".", port = 7860)
 ```
 
 **With Docker:**
 
 ```bash
-docker build -t job\\\_scout\\\_chat .
-docker run --rm -p 7860:7860 -e OPENAI\\\_API\\\_KEY=$OPENAI\\\_API\\\_KEY job\\\_scout\\\_chat
+docker build -t job\\\\\\\_scout\\\\\\\_chat .
+docker run --rm -p 7860:7860 -e OPENAI\\\\\\\_API\\\\\\\_KEY=$OPENAI\\\\\\\_API\\\\\\\_KEY job\\\\\\\_scout\\\\\\\_chat
 ```
 
 Then open http://localhost:7860.
