@@ -10,15 +10,15 @@ A twelve-line [querychat](https://github.com/posit-dev/querychat) app built in I
 
 * Which Columbus neighbourhood has the priciest entire homes?
 
-!\[Priciest Columbus neighborhood](screenshots/question1.png)
+![Priciest Columbus neighborhood](screenshots/question1.png)
 
 * Do superhosts charge more per night than other hosts? Show it as a bar chart.
 
-!\[Superhost prices](screenshots/question2.png)
+![Superhost prices](screenshots/question2.png)
 
 * How many listings could host a party of ten?
 
-!\[Party of ten](screenshots/question3.png)
+![Party of ten](screenshots/question3.png)
 
 \---
 
