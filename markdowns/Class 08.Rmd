@@ -15,6 +15,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## API IS "APPLICATION PROGRAM INTERFACE"
 
 ## Cincy Crashes
 ```{r api_intro}
@@ -24,3 +25,85 @@ httr2::request("https://data.cincinnati-oh.gov/resource/rvmt-pkmq.json") |>
   httr2::resp_body_string() |>
   jsonlite::fromJSON() -> cincy_crashes
 ```
+
+# FRED
+
+```{r fred}
+httr2::request("https://api.stlouisfed.org/fred/series/observations") |>
+  httr2::req_url_query(
+    series_id = "IHLIDXUSOH",
+    api_key = Sys.getenv("FRED_API_KEY"),
+    file_type = "json"
+  ) |>
+  # nothing has been sent yet
+  httr2::req_perform() |>
+  httr2::resp_body_string() |>
+  jsonlite::fromJSON() -> ohio_jobs
+
+jobs_df <- ohio_jobs$observations
+# OR
+jobs_df <- ohio_jobs[[13]]
+
+
+# to get data from September
+# (a) get all the data and filter the rows that I want.
+  # this is not the most efficient but is correct.
+dplyr::glimpse(jobs_df)
+
+jobs_df |> 
+  dplyr::mutate(
+    date = lubridate::ymd(date)
+  ) |> 
+  dplyr::filter(date >= '2026-09-01') -> jobs_df_mod
+
+# (b) use the API since it had observation_start
+httr2::request("https://api.stlouisfed.org/fred/series/observations") |>
+  httr2::req_url_query(
+    series_id = "IHLIDXUSOH",
+    api_key = Sys.getenv("FRED_API_KEY"),
+    file_type = "json",
+    observation_start="2026-09-01"
+  ) |>
+  # nothing has been sent yet
+  httr2::req_perform() |>
+  httr2::resp_body_string() |>
+  jsonlite::fromJSON() -> ohio_jobs_sep_2026
+
+ohio_jobs_sep_2026_df = ohio_jobs_sep_2026$observations
+
+```
+
+#USA JOBS
+
+```{r usa_jobs}
+httr2::request("https://data.usajobs.gov/api/search") |>
+  httr2::req_url_query(Keyword = "Data Analyst", ResultsPerPage = 500) |>
+  httr2::req_headers(
+    Host = "data.usajobs.gov",
+    "User-Agent" = "yourname@miamioh.edu",
+    "Authorization-Key" = Sys.getenv("USAJOBS_API_KEY")
+  ) |>
+  httr2::req_perform() |>
+  httr2::resp_body_string() |>
+  jsonlite::fromJSON(flatten = TRUE) -> usa_jobs_list
+
+usa_df <- usa_jobs_list$SearchResult$SearchResultItems
+
+jobs_small = usa_df |>
+  dplyr::select(
+    title = MatchedObjectDescriptor.PositionTitle,
+    department = MatchedObjectDescriptor.DepartmentName,
+    agency = MatchedObjectDescriptor.OrganizationName,
+    location = MatchedObjectDescriptor.PositionLocationDisplay,
+    closes = MatchedObjectDescriptor.ApplicationCloseDate
+  )
+
+jobs_small |> dplyr::count(department) |> dplyr::arrange(dplyr::desc(n)) |> head(3)
+
+index_data_analyst = jobs_small$title |> 
+  stringr::str_detect(pattern = 'Data Analyst|Data Analytics')
+```
+
+
+
+
