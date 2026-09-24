@@ -40,9 +40,12 @@ A2
 ```
 
 
-## Task 4
+## Task 2
 ```{r}
-room_type == "Entire home/apt"
+dplyr::filter(room_type == "Entire home/apt")
+dplyr::filter(accommodates >= 4)
+dplyr::filter(number_of_reviews >= 10)
+dplyr::filter(review_scores_rating >= 4.8)
 ```
 
 
