@@ -1,0 +1,50 @@
+---
+title: "airbnb_analysis"
+author: "Jacob Farmer"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+con = DBI::dbConnect(RSQLite::SQLite(), "../data/midwest_airbnb_extended.db")
+listings     = DBI::dbReadTable(con, "listings") |> tibble::as_tibble()
+availability = DBI::dbReadTable(con, "availability_monthly") |> tibble::as_tibble()
+reviews      = DBI::dbReadTable(con, "reviews_monthly") |> tibble::as_tibble()
+DBI::dbDisconnect(con)
+```
+
+## Task 1
+```{r}
+host_counts <- listings |> 
+  dplyr::group_by(host_id) |> 
+  dplyr::summarise(host_listings = n())
+
+listings <- listings |> 
+  dplyr::left_join(host_counts, by = "host_id")
+
+A1 <- host_counts |> 
+  dplyr::filter(host_listings >= 10) |> 
+  nrow()
+
+A1
+
+A2 <- listings |> 
+  dplyr::filter(city == "Chicago") |> 
+  dplyr::summarise(mean(host_listings>= 10) * 100)
+
+A2
+```
+
+
+## Task 4
+```{r}
+room_type == "Entire home/apt"
+```
+
+
+
+
