@@ -21,7 +21,7 @@ DBI::dbDisconnect(con)
 ```{r}
 host_counts <- listings |> 
   dplyr::group_by(host_id) |> 
-  dplyr::summarise(host_listings = n())
+  dplyr::summarise(host_listings = dplyr::n())
 
 listings <- listings |> 
   dplyr::left_join(host_counts, by = "host_id")
@@ -34,7 +34,7 @@ A1
 
 A2 <- listings |> 
   dplyr::filter(city == "Chicago") |> 
-  dplyr::summarise(mean(host_listings>= 10) * 100)
+  dplyr::summarise(pct_superhosts = mean(host_listings>= 10) * 100)
 
 A2
 ```
@@ -42,12 +42,45 @@ A2
 
 ## Task 2
 ```{r}
-dplyr::filter(room_type == "Entire home/apt")
-dplyr::filter(accommodates >= 4)
-dplyr::filter(number_of_reviews >= 10)
-dplyr::filter(review_scores_rating >= 4.8)
+listings_filtered <- listings |> 
+  dplyr::filter(room_type == "Entire home/apt", 
+                accommodates >= 4,
+                number_of_reviews >= 10,
+                review_scores_rating >= 4.8) |> 
+  dplyr::mutate(price_per_person = price / accommodates)
+
+median_listings <- listings_filtered |> 
+  dplyr::group_by(city, neighbourhood) |> 
+  dplyr::summarise(n = dplyr::n(),
+                   median_price_per_person = median(price_per_person),
+                   .groups = "drop_last") |>
+  dplyr::filter(city == "Columbus",
+                n >= 20)
+  
+A3 <- median_listings[which.min(median_listings$median_price_per_person), ]
+
+A3
 ```
 
+## Task 3
+```{r}
+estimated_revenue <- listings |> 
+  dplyr::group_by(city, room_type) |> 
+  dplyr::summarise(dplyr::across(c(price, reviews_per_month, estimated_revenue_l365d),
+                                 ~ median(.x, na.rm = TRUE)),
+                   .groups = "drop-last")
 
+A4 <- estimated_revenue |> 
+  dplyr::filter(city == "Twin Cities",
+                room_type == "Entire home/apt") |> 
+  dplyr::select(estimated_revenue_l365d)
+
+A4
+```
+
+## Task 4
+```{r}
+
+```
 
 
