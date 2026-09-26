@@ -80,7 +80,24 @@ A4
 
 ## Task 4
 ```{r}
+top10_est_revenue <- listings |> 
+  dplyr::group_by(city) |> 
+  dplyr::arrange(dplyr::desc(estimated_revenue_l365d), .by_group = TRUE) |> 
+  dplyr::mutate(top_10 = dplyr::row_number() <= ceiling(0.10 * dplyr::n())) |> 
+  dplyr::summarise(pct_top_10 = sum(estimated_revenue_l365d[top_10]) /
+                                sum(estimated_revenue_l365d) * 100)
+
+A5 <- top10_est_revenue |> 
+  dplyr::filter(city == "Columbus")
+
+A5
+```
+
+## Task 5
+```{r}
 
 ```
+
+
 
 
