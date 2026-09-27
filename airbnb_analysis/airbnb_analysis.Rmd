@@ -142,25 +142,6 @@ A9 <- twin_cities |>
 A9
 ```
 
-## Task 7
-```{r}
-superhost_medians <- listings |>
-  dplyr::filter(room_type == "Entire home/apt") |> 
-  dplyr::group_by(city, host_is_superhost) |>
-  dplyr::summarise(median_price = median(price, na.rm = TRUE), 
-                   median_rating = median(review_scores_rating, na.rm = TRUE),
-                   .groups = "drop_last")
-
-superhost_medians
-
-superhost_premiums <- superhost_medians |> 
-  dplyr::group_by(city) |> 
-  dplyr::summarise(premium = median_price[host_is_superhost == "t"] -
-                             median_price[host_is_superhost == "f"])
-
-superhost_premiums
-```
-
 ## Task 8
 ```{r}
 no_availability <- listings |> 
@@ -175,8 +156,24 @@ no_availability |>
 
 ```
 
+## Task 7
+```{r}
+superhost_medians <- listings |>
+  dplyr::filter(room_type == "Entire home/apt") |> 
+  dplyr::group_by(city, host_is_superhost) |>
+  dplyr::summarise(median_price = median(price, na.rm = TRUE), 
+                 median_rating = median(review_scores_rating, na.rm = TRUE),
+                 median_rpm = median(reviews_per_month, na.rm = TRUE),
+                 .groups = "drop_last")
 
+superhost_medians
 
+superhost_premiums <- superhost_medians |> 
+  dplyr::group_by(city) |> 
+  dplyr::summarise(premium = median_price[host_is_superhost == "t"] -
+                             median_price[host_is_superhost == "f"])
 
+superhost_premiums
+```
 
 
