@@ -95,8 +95,34 @@ A5
 
 ## Task 5
 ```{r}
+october <- availability |> 
+  dplyr::filter(month == "2026-10")
+
+october_homes <- listings |> 
+  dplyr::filter(room_type == "Entire home/apt") |> 
+  dplyr::left_join(october, by = "id") |> 
+  dplyr::mutate(mostly_taken = nights_available < 0.5 * nights_in_month)
+
+taken_share <- october_homes |> 
+  dplyr::group_by(city) |> 
+  dplyr::summarise(share_taken = mean(mostly_taken, na.rm = TRUE)) |> 
+  dplyr::arrange(share_taken)
+
+A <- taken_share |> 
+  dplyr::slice_min(share_taken)
+A6 <- A[1]
+
+A7 <- A[2]
+
+A6
+A7
+```
+
+## Task 6
+```{r}
 
 ```
+
 
 
 
