@@ -68,7 +68,7 @@ estimated_revenue <- listings |>
   dplyr::group_by(city, room_type) |> 
   dplyr::summarise(dplyr::across(c(price, reviews_per_month, estimated_revenue_l365d),
                                  ~ median(.x, na.rm = TRUE)),
-                   .groups = "drop-last")
+                   .groups = "drop_last")
 
 A4 <- estimated_revenue |> 
   dplyr::filter(city == "Twin Cities",
@@ -112,7 +112,8 @@ A <- taken_share |>
   dplyr::slice_min(share_taken)
 A6 <- A[1]
 
-A7 <- A[2]
+share_taken_pct <- A[2] * 100
+A7 <- share_taken_pct
 
 A6
 A7
@@ -120,8 +121,60 @@ A7
 
 ## Task 6
 ```{r}
+monthly_reviews <- reviews |> 
+  dplyr::left_join(listings |> dplyr::select(id, city), by = "id") |> 
+  dplyr::filter(month >= "2025-07", month <= "2026-06") |> 
+  dplyr::group_by(city, month) |> 
+  dplyr::summarise(total_reviews = sum(reviews), .groups = "drop")
+
+twin_cities <- monthly_reviews |> 
+  dplyr::filter(city == "Twin Cities") |> 
+  dplyr::arrange(dplyr::desc(total_reviews))
+
+A8 <- twin_cities |> 
+  dplyr::slice_max(total_reviews)
+
+A8
+
+A9 <- twin_cities |> 
+  dplyr::summarise(ratio = max(total_reviews) / min(total_reviews))
+
+A9
+```
+
+## Task 7
+```{r}
+superhost_medians <- listings |>
+  dplyr::filter(room_type == "Entire home/apt") |> 
+  dplyr::group_by(city, host_is_superhost) |>
+  dplyr::summarise(median_price = median(price, na.rm = TRUE), 
+                   median_rating = median(review_scores_rating, na.rm = TRUE),
+                   .groups = "drop_last")
+
+superhost_medians
+
+superhost_premiums <- superhost_medians |> 
+  dplyr::group_by(city) |> 
+  dplyr::summarise(premium = median_price[host_is_superhost == "t"] -
+                             median_price[host_is_superhost == "f"])
+
+superhost_premiums
+```
+
+## Task 8
+```{r}
+no_availability <- listings |> 
+  dplyr::anti_join(availability, by = "id")
+
+A10 <- nrow(no_availability)
+
+A10
+
+no_availability |> 
+  dplyr::count(city, sort = TRUE)
 
 ```
+
 
 
 
