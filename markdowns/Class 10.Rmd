@@ -1,0 +1,11 @@
+---
+title: "Class 10"
+author: "Jacob Farmer"
+date: "2026-09-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
