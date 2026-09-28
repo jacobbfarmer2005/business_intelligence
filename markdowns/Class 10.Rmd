@@ -88,7 +88,7 @@ isa_courses_in_r |>
   rvest::html_elements(".courseblockdesc") |> 
   rvest::html_text2() -> isa_desc
 
-
+df = data.frame(title = isa_titles, description = isa_desc)
 
 
 ```
