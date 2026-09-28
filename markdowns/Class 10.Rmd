@@ -2,10 +2,95 @@
 title: "Class 10"
 author: "Jacob Farmer"
 date: "2026-09-28"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    numbered_sections: true
+    code_download: true
+    code_folding: show
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+
+## `robots.txt` example: MU Bulletin
+
+IN the chuck below, we used [robotstxt package] (https://github.com/ropensci/robotstxt) to check if we are allowed to write a program that scrapes the page:
+<https://github.com/ropensci/robotstxt>
+
+```{r}
+robotstxt::paths_allowed(
+  paths = "/courses-instruction/isa/", 
+  domain = "bulletin.miamioh.edu", 
+  bot = "*"
+  )
+```
+
+The `TRUE` above means that we are allowed to scrape the page.
+
+### In class practice
+```{r}
+robotstxt::paths_allowed(
+  paths = "/wiki/Miami_RedHawks_football",
+  domain = "en.wikipedia.org",
+  bot = "*"
+)
+
+# Sometimes the botobstxt provides inconsistent answers. Typically, you get a waring with the answer that is incorrect.
+# soloution: drop the trailing slash from the URL.
+# even better: check the robots.txt file for the relevant URL.
+robotstxt::paths_allowed(
+  paths = "/jobs/",
+  domain = "www.linkedin.com",
+  bot = "*"
+)
+
+robotstxt::paths_allowed(
+  paths = c("/jobs","/viewjob"),
+  domain = "www.indeed.com",
+  bot = "*"
+)
+```
+
+
+## Scrape Miami's Bulletin for ISA
+```{r}
+# checking whether we are allowed to scrape this info.
+
+robotstxt::paths_allowed(
+  paths = "/courses-instruction/isa/", 
+  domain = "bulletin.miamioh.edu", 
+  bot = "*"
+  )
+# this return `True` so we are allowed to scrape.
+
+# I will load the backend of the HTML into R using:
+# [a] rvest::read_html() | sometimes rvest::html_live() is the page has some dynamic content.
+# [b] in some cases, we will craft this as a request as shown in slides httr2::request() > ... > httr2::body_html()
+
+isa_courses_in_r = rvest::read_html("https://bulletin.miamioh.edu/courses-instruction/isa/")
+
+# we will extract course titles, which we can do in a single pipeline given that they look the same on the rendered page in Chrome (bolded, same font size, and same font type)
+
+# css selector was obtained by:
+# [a] highlighting what we wanted to pull (ISA 401 course title) -> right click > inspect > right click > copy > copy selector
+# [b] from this specific example, we were able to get just the title for ISA 401 because we had `:nth-child(24)` -> if you were to drop it -> you get all the course titles
+
+isa_courses_in_r |> 
+  rvest::html_elements("#sc_sccoursedescs > div:nth-child(24) > p.courseblocktitle > strong") |> 
+  rvest::html_text2() -> isa_titles
+
+# capturing the course descriptions
+isa_courses_in_r |> 
+  rvest::html_elements(".courseblockdesc") |> 
+  rvest::html_text2() -> isa_desc
+
+
+
+
+```
+
 
