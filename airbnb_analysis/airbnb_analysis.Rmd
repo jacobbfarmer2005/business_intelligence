@@ -176,4 +176,31 @@ superhost_premiums <- superhost_medians |>
 superhost_premiums
 ```
 
+## Task B2
+```{r}
+# see A2 and A5 for the missing cities.
 
+superhosts_columbus <- listings |> 
+  dplyr::filter(city == "Columbus") |> 
+  dplyr::summarise(pct_superhosts = mean(host_listings>= 10) * 100)
+
+superhosts_columbus
+
+superhosts_twincities <- listings |> 
+  dplyr::filter(city == "Twin Cities") |> 
+  dplyr::summarise(pct_superhosts = mean(host_listings>= 10) * 100)
+
+superhosts_twincities
+
+
+top10_revenue_chicago <- top10_est_revenue |> 
+  dplyr::filter(city == "Chicago")
+
+top10_revenue_chicago
+
+top10_revenue_twincities <- top10_est_revenue |> 
+  dplyr::filter(city == "Twin Cities")
+
+top10_revenue_twincities
+
+```
