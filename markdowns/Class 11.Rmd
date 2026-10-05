@@ -100,7 +100,16 @@ year = 2025
 
 crash_url = paste0('https://www.planecrashinfo.com/', year, '/', year, '.htm')
 
-crash_page = rvest::read_html()
+crash_page <- rvest::read_html(crash_url, encoding = "ISO-8859-1")
+
+# This should now print without the error
+crash_page
+
+
+# How many <table> elements are on the page?
+crash_tables <- crash_page |>
+  rvest::html_elements("table") |>
+  rvest::html_table()
 ```
 
 
