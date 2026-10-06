@@ -1,0 +1,55 @@
+---
+title: "Assignment 7"
+author: "Jacob Farmer"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    numbered_sections: true
+    code_download: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+robotstxt::paths_allowed(
+  paths = "/fsb/directory/",
+  domain = "miamioh.edu",
+  bot = "*"
+)
+```
+
+```{r}
+dept_names = c('Accountancy', 'Economics', 'Entrepreneurship', 'Finance',
+               'Information%20Systems%20%26%20Analytics', 'Marketing', 'Management')
+
+directory_df = data.frame()
+for (abbrv in dept_names) {
+  cat( rep("-", 50) , "\n")
+  print(abbrv)
+  directory_url = paste0(
+    'https://miamioh.edu/fsb/directory/?up=/query/all/all/', abbrv, '/all'
+  )
+  
+  webpage = rvest::read_html(directory_url)
+  
+  webpage |> rvest::html_elements("td:last-child strong a") -> name_links
+  name_links |> rvest::html_text2() -> faculty_name
+  name_links |> rvest::html_attr("href") -> faculty_website
+  webpage |> rvest::html_elements("td:last-child i") |> rvest::html_text2() -> faculty_position
+
+    df = data.frame(department = abbrv, faculty_name = faculty_name, faculty_position = faculty_position, faculty_website = faculty_website)
+  print(df$title[1:2])
+  directory_df = rbind(directory_df, df)
+  
+  Sys.sleep(1)
+}
+
+head(directory_df)
+```
+
+
