@@ -34,12 +34,12 @@ for (abbrv in dept_names) {
   directory_url = paste0(
     'https://miamioh.edu/fsb/directory/?up=/query/all/all/', abbrv, '/all'
   )
-  
+
   webpage = rvest::read_html(directory_url)
   
   webpage |> rvest::html_elements("td:last-child strong a") -> name_links
   name_links |> rvest::html_text2() -> faculty_name
-  name_links |> rvest::html_attr("href") -> faculty_website
+  name_links |> rvest::html_elements("#sidebar-main > div > table > tbody > tr:nth-child(2) > td:nth-child(3) > strong > a > href") -> faculty_website
   webpage |> rvest::html_elements("td:last-child i") |> rvest::html_text2() |> stringr::str_squish() -> faculty_position
 
     df = data.frame(department = abbrv, faculty_name = faculty_name, faculty_position = faculty_position, faculty_website = faculty_website)
