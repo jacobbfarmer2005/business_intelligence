@@ -27,26 +27,30 @@ robotstxt::paths_allowed(
 dept_names = c('Accountancy', 'Economics', 'Entrepreneurship', 'Finance',
                'Information%20Systems%20%26%20Analytics', 'Marketing', 'Management')
 
-directory_df = data.frame()
-for (abbrv in dept_names) {
-  cat( rep("-", 50) , "\n")
-  print(abbrv)
+scrape_fsb_directory = function(abbrv){
   directory_url = paste0(
     'https://miamioh.edu/fsb/directory/?up=/query/all/all/', abbrv, '/all'
   )
-
+  
   webpage = rvest::read_html(directory_url)
   
   webpage |> rvest::html_elements("td:last-child strong a") -> name_links
-  name_links |> rvest::html_text2() -> faculty_name
-  name_links |> rvest::html_elements("a > href") -> faculty_website
-  webpage |> rvest::html_elements("td:last-child i") |> rvest::html_text2() |> stringr::str_squish() -> faculty_position
-
-    df = data.frame(department = abbrv, faculty_name = faculty_name, faculty_position = faculty_position, faculty_website = faculty_website)
-  directory_df = rbind(directory_df, df)
+  name_links |> rvest::html_element(xpath = "./text()") |> rvest::html_text2() |> stringr::str_squish() -> faculty_name 
+  #Including xpath = "./text()" because the html_text2() function picked up html comments included in the source files with the names. Claude said that (xpath = "./text()" will allow the function to only pick out text, and exclude comments.
   
+  name_links |> rvest::html_attr("href") -> faculty_website
+  webpage |> rvest::html_elements("td:last-child i") |> rvest::html_text2() |> stringr::str_squish() -> faculty_position
+  
+  df = data.frame(department = utils::URLdecode(abbrv), 
+                  faculty_name = faculty_name, 
+                  faculty_position = faculty_position, 
+                  faculty_website = faculty_website)
   Sys.sleep(1)
+  return(df)
+  
 }
+
+directory_df = purrr::map_df(.x = dept_names, .f = scrape_fsb_directory)
 
 head(directory_df)
 ```
