@@ -1617,35 +1617,27 @@ for (abbrv in dept_names) {
   webpage |&gt; rvest::html_elements(&quot;td:last-child strong a&quot;) -&gt; name_links
   name_links |&gt; rvest::html_text2() -&gt; faculty_name
   name_links |&gt; rvest::html_attr(&quot;href&quot;) -&gt; faculty_website
-  webpage |&gt; rvest::html_elements(&quot;td:last-child i&quot;) |&gt; rvest::html_text2() -&gt; faculty_position
+  webpage |&gt; rvest::html_elements(&quot;td:last-child i&quot;) |&gt; rvest::html_text2() |&gt; stringr::str_squish() -&gt; faculty_position
 
     df = data.frame(department = abbrv, faculty_name = faculty_name, faculty_position = faculty_position, faculty_website = faculty_website)
-  print(df$title[1:2])
   directory_df = rbind(directory_df, df)
   
   Sys.sleep(1)
 }</code></pre>
 <pre><code>## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 ## [1] &quot;Accountancy&quot;
-## NULL
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 ## [1] &quot;Economics&quot;
-## NULL
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 ## [1] &quot;Entrepreneurship&quot;
-## NULL
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 ## [1] &quot;Finance&quot;
-## NULL
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 ## [1] &quot;Information%20Systems%20%26%20Analytics&quot;
-## NULL
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 ## [1] &quot;Marketing&quot;
-## NULL
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-## [1] &quot;Management&quot;
-## NULL</code></pre>
+## [1] &quot;Management&quot;</code></pre>
 <pre class="r"><code>head(directory_df)</code></pre>
 <pre><code>##    department          faculty_name
 ## 1 Accountancy   Brian Ballou, Ph.D.
@@ -1654,13 +1646,13 @@ for (abbrv in dept_names) {
 ## 4 Accountancy  Po-Chang Chen, Ph.D.
 ## 5 Accountancy Matthew Cobabe, Ph.D.
 ## 6 Accountancy  Timothy Eaton, Ph.D.
-##                                                                                                                                   faculty_position
-## 1 EY Professor of Accounting, William Isaac and\nMichael Oxley Center for Business Leadership Co-Founder, Miami MBA Faculty Director and Professor
-## 2                                                                                                                                      Professor\n
-## 3                                                                                                                            Associate Professor\n
-## 4                                                                                                                            Associate Professor\n
-## 5                                                                                                                   Assistant Teaching Professor\n
-## 6                                                                                                   Arthur Andersen Alumni Professor &amp; Professor\n
+##                                                                                                                                  faculty_position
+## 1 EY Professor of Accounting, William Isaac and Michael Oxley Center for Business Leadership Co-Founder, Miami MBA Faculty Director and Professor
+## 2                                                                                                                                       Professor
+## 3                                                                                                                             Associate Professor
+## 4                                                                                                                             Associate Professor
+## 5                                                                                                                    Assistant Teaching Professor
+## 6                                                                                                    Arthur Andersen Alumni Professor &amp; Professor
 ##                                 faculty_website
 ## 1 http://www.fsb.miamioh.edu/directory/balloubj
 ## 2  http://www.fsb.miamioh.edu/directory/brinkwd
@@ -1669,7 +1661,7 @@ for (abbrv in dept_names) {
 ## 5  http://www.fsb.miamioh.edu/directory/cobabem
 ## 6   http://www.fsb.miamioh.edu/directory/eatont</code></pre>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkFzc2lnbm1lbnQgNyINCmF1dGhvcjogIkphY29iIEZhcm1lciINCmRhdGU6ICJgciBTeXMuRGF0ZSgpYCINCm91dHB1dDogDQogIGh0bWxfZG9jdW1lbnQ6DQogICAgdG9jOiB0cnVlDQogICAgdG9jX2Zsb2F0OiB0cnVlDQogICAgbnVtYmVyZWRfc2VjdGlvbnM6IHRydWUNCiAgICBjb2RlX2Rvd25sb2FkOiB0cnVlDQogICAgY29kZV9mb2xkaW5nOiBzaG93DQotLS0NCg0KYGBge3Igc2V0dXAsIGluY2x1ZGU9RkFMU0V9DQprbml0cjo6b3B0c19jaHVuayRzZXQoZWNobyA9IFRSVUUpDQpgYGANCg0KYGBge3J9DQpyb2JvdHN0eHQ6OnBhdGhzX2FsbG93ZWQoDQogIHBhdGhzID0gIi9mc2IvZGlyZWN0b3J5LyIsDQogIGRvbWFpbiA9ICJtaWFtaW9oLmVkdSIsDQogIGJvdCA9ICIqIg0KKQ0KYGBgDQoNCmBgYHtyfQ0KZGVwdF9uYW1lcyA9IGMoJ0FjY291bnRhbmN5JywgJ0Vjb25vbWljcycsICdFbnRyZXByZW5ldXJzaGlwJywgJ0ZpbmFuY2UnLA0KICAgICAgICAgICAgICAgJ0luZm9ybWF0aW9uJTIwU3lzdGVtcyUyMCUyNiUyMEFuYWx5dGljcycsICdNYXJrZXRpbmcnLCAnTWFuYWdlbWVudCcpDQoNCmRpcmVjdG9yeV9kZiA9IGRhdGEuZnJhbWUoKQ0KZm9yIChhYmJydiBpbiBkZXB0X25hbWVzKSB7DQogIGNhdCggcmVwKCItIiwgNTApICwgIlxuIikNCiAgcHJpbnQoYWJicnYpDQogIGRpcmVjdG9yeV91cmwgPSBwYXN0ZTAoDQogICAgJ2h0dHBzOi8vbWlhbWlvaC5lZHUvZnNiL2RpcmVjdG9yeS8/dXA9L3F1ZXJ5L2FsbC9hbGwvJywgYWJicnYsICcvYWxsJw0KICApDQogIA0KICB3ZWJwYWdlID0gcnZlc3Q6OnJlYWRfaHRtbChkaXJlY3RvcnlfdXJsKQ0KICANCiAgd2VicGFnZSB8PiBydmVzdDo6aHRtbF9lbGVtZW50cygidGQ6bGFzdC1jaGlsZCBzdHJvbmcgYSIpIC0+IG5hbWVfbGlua3MNCiAgbmFtZV9saW5rcyB8PiBydmVzdDo6aHRtbF90ZXh0MigpIC0+IGZhY3VsdHlfbmFtZQ0KICBuYW1lX2xpbmtzIHw+IHJ2ZXN0OjpodG1sX2F0dHIoImhyZWYiKSAtPiBmYWN1bHR5X3dlYnNpdGUNCiAgd2VicGFnZSB8PiBydmVzdDo6aHRtbF9lbGVtZW50cygidGQ6bGFzdC1jaGlsZCBpIikgfD4gcnZlc3Q6Omh0bWxfdGV4dDIoKSAtPiBmYWN1bHR5X3Bvc2l0aW9uDQoNCiAgICBkZiA9IGRhdGEuZnJhbWUoZGVwYXJ0bWVudCA9IGFiYnJ2LCBmYWN1bHR5X25hbWUgPSBmYWN1bHR5X25hbWUsIGZhY3VsdHlfcG9zaXRpb24gPSBmYWN1bHR5X3Bvc2l0aW9uLCBmYWN1bHR5X3dlYnNpdGUgPSBmYWN1bHR5X3dlYnNpdGUpDQogIHByaW50KGRmJHRpdGxlWzE6Ml0pDQogIGRpcmVjdG9yeV9kZiA9IHJiaW5kKGRpcmVjdG9yeV9kZiwgZGYpDQogIA0KICBTeXMuc2xlZXAoMSkNCn0NCg0KaGVhZChkaXJlY3RvcnlfZGYpDQpgYGANCg0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkFzc2lnbm1lbnQgNyINCmF1dGhvcjogIkphY29iIEZhcm1lciINCmRhdGU6ICJgciBTeXMuRGF0ZSgpYCINCm91dHB1dDogDQogIGh0bWxfZG9jdW1lbnQ6DQogICAgdG9jOiB0cnVlDQogICAgdG9jX2Zsb2F0OiB0cnVlDQogICAgbnVtYmVyZWRfc2VjdGlvbnM6IHRydWUNCiAgICBjb2RlX2Rvd25sb2FkOiB0cnVlDQogICAgY29kZV9mb2xkaW5nOiBzaG93DQotLS0NCg0KYGBge3Igc2V0dXAsIGluY2x1ZGU9RkFMU0V9DQprbml0cjo6b3B0c19jaHVuayRzZXQoZWNobyA9IFRSVUUpDQpgYGANCg0KYGBge3J9DQpyb2JvdHN0eHQ6OnBhdGhzX2FsbG93ZWQoDQogIHBhdGhzID0gIi9mc2IvZGlyZWN0b3J5LyIsDQogIGRvbWFpbiA9ICJtaWFtaW9oLmVkdSIsDQogIGJvdCA9ICIqIg0KKQ0KYGBgDQoNCmBgYHtyfQ0KZGVwdF9uYW1lcyA9IGMoJ0FjY291bnRhbmN5JywgJ0Vjb25vbWljcycsICdFbnRyZXByZW5ldXJzaGlwJywgJ0ZpbmFuY2UnLA0KICAgICAgICAgICAgICAgJ0luZm9ybWF0aW9uJTIwU3lzdGVtcyUyMCUyNiUyMEFuYWx5dGljcycsICdNYXJrZXRpbmcnLCAnTWFuYWdlbWVudCcpDQoNCmRpcmVjdG9yeV9kZiA9IGRhdGEuZnJhbWUoKQ0KZm9yIChhYmJydiBpbiBkZXB0X25hbWVzKSB7DQogIGNhdCggcmVwKCItIiwgNTApICwgIlxuIikNCiAgcHJpbnQoYWJicnYpDQogIGRpcmVjdG9yeV91cmwgPSBwYXN0ZTAoDQogICAgJ2h0dHBzOi8vbWlhbWlvaC5lZHUvZnNiL2RpcmVjdG9yeS8/dXA9L3F1ZXJ5L2FsbC9hbGwvJywgYWJicnYsICcvYWxsJw0KICApDQogIA0KICB3ZWJwYWdlID0gcnZlc3Q6OnJlYWRfaHRtbChkaXJlY3RvcnlfdXJsKQ0KICANCiAgd2VicGFnZSB8PiBydmVzdDo6aHRtbF9lbGVtZW50cygidGQ6bGFzdC1jaGlsZCBzdHJvbmcgYSIpIC0+IG5hbWVfbGlua3MNCiAgbmFtZV9saW5rcyB8PiBydmVzdDo6aHRtbF90ZXh0MigpIC0+IGZhY3VsdHlfbmFtZQ0KICBuYW1lX2xpbmtzIHw+IHJ2ZXN0OjpodG1sX2F0dHIoImhyZWYiKSAtPiBmYWN1bHR5X3dlYnNpdGUNCiAgd2VicGFnZSB8PiBydmVzdDo6aHRtbF9lbGVtZW50cygidGQ6bGFzdC1jaGlsZCBpIikgfD4gcnZlc3Q6Omh0bWxfdGV4dDIoKSB8PiBzdHJpbmdyOjpzdHJfc3F1aXNoKCkgLT4gZmFjdWx0eV9wb3NpdGlvbg0KDQogICAgZGYgPSBkYXRhLmZyYW1lKGRlcGFydG1lbnQgPSBhYmJydiwgZmFjdWx0eV9uYW1lID0gZmFjdWx0eV9uYW1lLCBmYWN1bHR5X3Bvc2l0aW9uID0gZmFjdWx0eV9wb3NpdGlvbiwgZmFjdWx0eV93ZWJzaXRlID0gZmFjdWx0eV93ZWJzaXRlKQ0KICBkaXJlY3RvcnlfZGYgPSByYmluZChkaXJlY3RvcnlfZGYsIGRmKQ0KICANCiAgU3lzLnNsZWVwKDEpDQp9DQoNCmhlYWQoZGlyZWN0b3J5X2RmKQ0KYGBgDQoNCg0K</div>
 
 
 </div>

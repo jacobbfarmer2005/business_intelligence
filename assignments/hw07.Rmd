@@ -40,10 +40,9 @@ for (abbrv in dept_names) {
   webpage |> rvest::html_elements("td:last-child strong a") -> name_links
   name_links |> rvest::html_text2() -> faculty_name
   name_links |> rvest::html_attr("href") -> faculty_website
-  webpage |> rvest::html_elements("td:last-child i") |> rvest::html_text2() -> faculty_position
+  webpage |> rvest::html_elements("td:last-child i") |> rvest::html_text2() |> stringr::str_squish() -> faculty_position
 
     df = data.frame(department = abbrv, faculty_name = faculty_name, faculty_position = faculty_position, faculty_website = faculty_website)
-  print(df$title[1:2])
   directory_df = rbind(directory_df, df)
   
   Sys.sleep(1)
