@@ -1,0 +1,59 @@
+---
+title: "Class 13"
+author: "Jacob Farmer"
+date: "2026-10-07"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    numbered_sections: true
+    code_download: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Tidy Data follows 3 rules.
+1) Each variable is a column
+2) Each observation is a row
+3) Each value is a cell.
+
+## Plane Crash Example
+```{r}
+year = 2025
+
+crash_url = paste0('https://www.planecrashinfo.com/', year, '/', year, '.htm')
+
+crash_page <- rvest::read_html(crash_url, encoding = "ISO-8859-1")
+
+# what we learned last class is that if I were to read this as an html table, I have no control on what goes into each column in the resulting data from -- this makes cleaning it (extracting it cleanly) challenging.
+
+crash_page |> 
+  rvest::html_elements("td:nth-child(1) > font > a") |> 
+  rvest::html_text2() -> dates
+
+crash_page |> 
+  rvest::html_elements("td:nth-child(2) > font") |> 
+  rvest::html_text2() -> loc_op
+
+crash_page |> 
+  rvest::html_elements("td:nth-child(4) > font") |> 
+  rvest::html_text2() -> fatalities
+
+df = data.frame(dates = dates, 
+                loc = loc_op[-1], 
+                fatalities = fatalities[-1]) |> 
+  tidyr::separate(
+    loc, into = c("location", "operator"), sep = "\n"
+  ) |> 
+  tidyr::separate(fatalities, into = c("plane_fatalities", "total_passengers", "ground_fatalities"))
+
+# This is tidy but not technically correct. To be correct change the dates and fatality #s to numbers using mutate
+
+```
+
+
+
+

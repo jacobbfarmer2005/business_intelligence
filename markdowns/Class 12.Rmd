@@ -52,8 +52,69 @@ crash_df = crash_df |>
   dplyr::mutate(Date = lubridate::dmy(Date))
 dplyr::glimpse(crash_df)
 
+```
 
+# ISA 125 Extraction
+```{r}
+chat = ellmer::chat_openai(
+  model = "gpt-5.6-luna"
+)
 
+isa125_courseblock = rvest::read_html("https://bulletin.miamioh.edu/courses-instruction/isa/") |> 
+  rvest::html_elements("#sc_sccoursedescs > div:nth-child(1)") |> 
+  rvest::html_text2()
+
+chat$chat_structured(
+  isa125_courseblock,
+  type = ellmer::type_object(
+    #code is the name of the first element in the returned sublist.
+    #type_string -> forces that element to be of type chr.
+    code = ellmer::type_string(
+      description = "The three letter abbreviation for the course and its number. For example, ISA 999 or FIN 444"
+    ),
+    name = ellmer::type_string(
+      description = "The title of the course without the three letter abbreviation and the number For example, Introuction to Macroeconomics. Do not return a period after the name."
+    ),
+    cr_hr = ellmer::type_integer(
+      description = "The number of credits shown in parenthesis after the course code and title."
+    )
+  )
+)
+```
+
+## All 50 ISA Courses
+```{r}
+course_vec = rvest::read_html("https://bulletin.miamioh.edu/courses-instruction/isa/") |> 
+  rvest::html_elements("#sc_sccoursedescs > div.courseblock")
+
+ # make it a list
+course_list = course_vec |> 
+  rvest::html_text2() |> 
+  as.list()
+
+type_course = ellmer::type_object(
+    #code is the name of the first element in the returned sublist.
+    #type_string -> forces that element to be of type chr.
+    code = ellmer::type_string(
+      description = "The three letter abbreviation for the course and its number. For example, ISA 999 or FIN 444"
+    ),
+    name = ellmer::type_string(
+      description = "The title of the course without the three letter abbreviation and the number For example, Introuction to Macroeconomics. Do not return a period after the name."
+    ),
+    cr_hr = ellmer::type_integer(
+      description = "The number of credits shown in parenthesis after the course code and title."
+    )
+  )
+
+isa_df = ellmer::parallel_chat_structured(
+  chat,
+  prompts = course_list,
+  type = type_course,
+  include_tokens = T, 
+  include_cost = T
+)
+
+sum(isa_df$cost)
 ```
 
 
