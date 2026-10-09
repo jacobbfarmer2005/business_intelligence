@@ -43,17 +43,17 @@ robotstxt::paths_allowed("https://en.wikipedia.org/wiki/Miami_University")
 
 #QUESTION 8
 ```{r}
-mu_policies = function(abbrv){
   policy_url = paste0(
     'https://miamioh.edu/policy-library/students/undergraduate/academic-regulations/'
   )
   
   webpage = rvest::read_html(policy_url)
   
-  webpage |> rvest::html_elements("a") -> policy_name
-  webpage |> rvest::html_attr("href") -> mu_policies
-    
-    }
+  webpage |> rvest::html_elements("a.news-lockup__body-link") -> policy_name #is not the best
+  policy_name |> rvest::html_attr("href") -> mu_policies
+  
+  
+  policy_name |> rvest::html_text2() -> policy_name_vec
 ```
 
 ```{r}
@@ -69,31 +69,83 @@ mu_policies = function(abbrv){
 mu_policies
 ```
 
-# QUESTION 10
+#QUESTION 9
 ```{r}
-# Naple coordinates
-httr2::request("https://api.weather.gov/points/26.142,-81.7948") |>
-  
-#### WHAT PARAMETER DO WE USE TO NOT GET 400 BAD REQUEST???  
-  httr2::req_url_query(
-    file_type = "json"
-  ) |>
-  # nothing has been sent yet
-  httr2::req_perform() |>
-  httr2::resp_body_string() |>
-  jsonlite::fromJSON() -> naples
+swim_url = paste0(
+    'https://miamiredhawks.com/sports/swimming-and-diving/roster'
+  )
 
-naples.df = data.frame(naples)
+webpage = rvest::read_html(swim_url)
+
+webpage |> rvest::html_elements("div > a > h3") |> rvest::html_text2() -> swim_name
+
+swim_name = swim_name[1:52]
+
+webpage |> rvest::html_elements(".s-person-details__bio-stats-item:nth-child(2)") |> rvest::html_text2() -> swim_year
+
+
+swim_year = stringr::str_remove(swim_year, "Academic Year ")
+swim_df = data.frame(name = swim_name, year = swim_year)
+  
 ```
 
 #QUESTION 11
 ```{r}
+toxic_df = readr::read_csv('../data/toxic_ips_oct2025.csv')
 
+ips = toxic_df$IP # pull column by name [in subset $ will return a vec with df]
+
+ip_fun = function(ip_add){
+  base_url = "http://ip-api.com/json/"
+  # ip_add = "24.48.0.1"
+  end_url = "?fields=status,message,continent,country,countryCode,region,regionName,city,district,zip,lat,lon,timezone,currency,isp,org,as,query"
+  full_url = paste0(base_url, ip_add, end_url)
+  
+  resp = jsonlite::fromJSON(full_url) |> dplyr::bind_cols()
+  
+  return(resp)
+}
+
+ip_df = data.frame()
+for (ip in ips) {
+  df = ip_fun(ip_add = ip)
+  # base_url = "http://ip-api.com/json/"
+  # ip_add = "24.48.0.1"
+  # end_url = "?fields=status,message,continent,country,countryCode,region,regionName,city,district,zip,lat,lon,timezone,currency,isp,org,as,query"
+  # full_url = paste0(base_url, ip_add, end_url)
+  # 
+  # resp = jsonlite::fromJSON(full_url) |> dplyr::bind_cols()
+  ip_df = rbind(ip_df, df)
+}
+
+```
+
+```{r}
+toxic_df = readr::read_csv("../data/toxic_ips_oct2025.csv")
+
+ips = toxic_df$IP
+
+ip_function = function(ip_address) {
+  base_url = "http://ip-api.com/json/"
+  end_url = "?fields=status,message,continent,country,countryCode,region,regionName,city,district,zip,lat,lon,timezone,currency,isp,org,as,query"
+  full_url = paste0(base_url, ip_address, end_url)
+  
+  url = jsonlite::fromJSON(full_url) |> dplyr::bind_cols()
+  
+  return(url)
+}
+
+ip_df = data.frame()
+for (ip in ips) {
+  df = ip_function(ip_address = ip)
+  
+  ip_df = rbind(ip_df, df)
+}
 ```
 
 #QUESTION 12
 ```{r}
-wb_tbl = readr::read_csv('https://raw.githubusercontent.com/fmegahed/isa401/main/data/wb_hospital_beds.csv')
+#wb_tbl = readr::read_csv('https://raw.githubusercontent.com/fmegahed/isa401/main/data/wb_hospital_beds.csv')
 ```
 
 #Question 13
@@ -104,11 +156,11 @@ ntse <- readr::read_csv("../data/ntse_endowment_us_and_canada_2020.csv")
 #QUESTION 14
 ```{r}
 # reading the data from my github repo to avoid an issues with file location
-ntse_tbl = readr::read_csv('https://raw.githubusercontent.com/fmegahed/isa401/main/data/ntse_endowment_us_and_canada_2020.csv')
+#ntse_tbl = readr::read_csv('https://raw.githubusercontent.com/fmegahed/isa401/main/data/ntse_endowment_us_and_canada_2020.csv')
 
 # a glimpse of the data
 # for this analysis, do NOT convert chr to factors (do not worry about this)
-dplyr::glimpse(ntse_tbl)
+#dplyr::glimpse(ntse_tbl)
 
 ```
 

@@ -1,0 +1,124 @@
+---
+title: "Exam Prep Part 2"
+author: "Jacob Farmer"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Question 3
+```{r}
+lst = list( 
+  gdp = data.frame(year = c(2020, 2021, 2022), values = c(19200, 20500, 21300), units = "USD billions" ),
+  population = list(country = "United States", year = c(2020, 2021, 2022), values = c(325, 331, 335), units = "millions"),
+  indicators = c("gdp", "population", "inflation"), # Available indicators
+  inflation_rate = 3.2 # Latest inflation rate as a single value
+)
+
+lst[[2]]
+```
+
+#Question 4
+```{r}
+hibp_data = jsonlite::fromJSON("../data/hibp_data.json")
+```
+
+#Question 5
+```{r}
+hibp_data[500, ][2]
+```
+
+#Question 6
+```{r}
+hibp_data$Email |> stringr::str_detect("miamioh.edu") |> table()
+```
+
+#Question 7
+```{r}
+robotstxt::paths_allowed("https://en.wikipedia.org/wiki/Miami_University", 
+                         bot = "*")
+```
+
+#Question 8
+```{r}
+policy_url = paste0("https://miamioh.edu/policy-library/students/undergraduate/academic-regulations/index.html")
+
+webpage = rvest::read_html(policy_url)
+
+webpage |> rvest::html_elements("a.news-lockup__body-link") |> rvest::html_text2() -> policy_name_vec
+webpage |> rvest::html_elements("a.news-lockup__body-link") |>  rvest::html_attr("href") -> mu_policies
+
+```
+
+#Question 9
+```{r}
+swim_url = paste0("https://miamiredhawks.com/sports/swimming-and-diving/roster")
+
+webpage = rvest::read_html(swim_url)
+
+webpage |> rvest::html_elements("div > a > h3") |> rvest::html_text2() -> swim_names
+
+swim_names = swim_names[1:52]
+
+webpage |> rvest::html_elements(".s-person-details__bio-stats-item:nth-child(2)") |> rvest::html_text2() -> swim_year
+
+swim_year = stringr::str_remove(swim_year, "Academic Year")
+swim_df = data.frame(name = swim_names, year = swim_year)
+
+```
+
+#Question 11
+```{r}
+ip_data = readr::read_csv("../data/toxic_ips_oct2025.csv")
+
+ips = ip_data$IP
+
+ip_function = function(ip_address){
+  base_url = "http://ip-api.com/json/"
+  end_url = "?fields=status,continent,country,countryCode,region,regionName,city,district,zip,lat,lon,timezone,currency,isp,org,as,query"
+  
+  full_url = paste0(base_url, ip_address, end_url)
+  
+  response = jsonlite::fromJSON(full_url) |> dplyr::bind_cols()
+  return(response)
+}
+
+ip_df = data.frame()
+for (ip in ips) {
+  df = ip_function(ip_address = ip)
+  
+  ip_df = rbind(ip_df, df)
+}
+```
+
+#Question 12
+TIDY occurs where:
+1) Every column is a variable
+2) Every row is an observation
+3) Every value is a cell
+
+TECHNICALLY CORRECT data is when:
+1) the data type is correct
+2) there are relevant column names
+
+#Question 13
+```{r}
+ntse_data = readr::read_csv("../data/ntse_endowment_us_and_canada_2020.csv")
+```
+
+#Question 14
+TECHNICALLY CORRECT data is when:
+1) the correct data type is used
+2) there are relevant column names
+
+
+
+
+
+
+
+
+
