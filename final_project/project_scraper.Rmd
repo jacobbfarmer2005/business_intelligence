@@ -1,0 +1,167 @@
+---
+title: "Project Scraper"
+author: "Jacob Farmer"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Scraper
+```{r}
+school_names = c(
+  "utrockets"        = "Toledo",
+  "umassathletics"   = "UMass",
+  "kentstatesports"  = "Kent State",
+  "emueagles"        = "Eastern Michigan",
+  "cmuchippewas"     = "Central Michigan",
+  "ubbulls"          = "Buffalo",
+  "bgsufalcons"      = "Bowling Green",
+  "ballstatesports"  = "Ball State",
+  "gozips"           = "Akron",
+  "ohiobobcats"      = "Ohio",
+  "miamiredhawks"    = "Miami University",
+  "hornetsports"     = "Sacramento State",
+  "wmubroncos"       = "Western Michigan"
+)
+
+urls = c(
+  "https://utrockets.com/sports/football/roster",
+  "https://umassathletics.com/sports/football/roster",
+  "https://kentstatesports.com/sports/football/roster",
+  "https://emueagles.com/sports/football/roster",
+  "http://cmuchippewas.com/sports/football/roster",
+  "https://ubbulls.com/sports/football/roster",
+  "https://bgsufalcons.com/sports/football/roster",
+  "https://ballstatesports.com/sports/football/roster",
+  "https://gozips.com/sports/football/roster",
+  "https://ohiobobcats.com/sports/football/roster",
+  "https://miamiredhawks.com/sports/football/roster"
+)
+
+roster_function = function(roster_url){
+  webpage = rvest::read_html(roster_url)
+  
+  # Get player cards first
+  webpage |> rvest::html_elements(".s-person-card") -> cards
+  
+  # Names
+  cards |> rvest::html_element("h3") |> rvest::html_text2() -> names
+  
+  # Position
+  cards |> rvest::html_element(".s-person-details__bio-stats-item:nth-child(1)") |> rvest::html_text2() -> position
+  position = stringr::str_remove(position, "Position ")
+  
+  # Year
+  cards |> rvest::html_element(".s-person-details__bio-stats-item:nth-child(2)") |> rvest::html_text2() -> year
+  year = stringr::str_remove(year, "Academic Year ")
+  
+  # Height
+  cards |> rvest::html_element(".s-person-details__bio-stats-item:nth-child(3)") |> rvest::html_text2() -> height
+  height = stringr::str_remove(height, "Height ")
+  
+  # Weight
+  cards |> rvest::html_element(".s-person-details__bio-stats-item:nth-child(4)") |> rvest::html_text2() -> weight
+  weight = stringr::str_remove(weight, "Weight ")
+  weight = stringr::str_remove(weight, " lbs")
+  
+  # Hometown
+  cards |> rvest::html_element(".s-person-card__content__person__location-item") |> rvest::html_text2() -> hometown
+  hometown = stringr::str_remove(hometown, "Hometown")
+  split_home = stringr::str_split_fixed(hometown, ",", n = 2)
+  city  = stringr::str_squish(split_home[, 1])
+  state = stringr::str_squish(split_home[, 2])
+  
+  # Previous school
+  cards |> rvest::html_element(".s-person-card__content__person__previous-school-item") |> rvest::html_text2() -> prev_school
+  prev_school = stringr::str_squish(stringr::str_remove(prev_school, "^.*Previous School:"))
+  
+  # Current school
+  site = stringr::str_extract(roster_url, "(?<=://)[^.]+")
+  school = unname(school_names[site])
+  
+  # Make the data frame
+  df = data.frame(school = school, name = names, year = year, position = position,
+                  height = height, weight_lbs = weight,
+                  hometown_city = city, hometown_state = state,
+                  previous_school = prev_school)
+  
+  # Drop coach/staff cards (no listed position)
+  df = df[!is.na(df$position), ]
+  
+  return(df)
+}
+
+mac_df = data.frame()
+for (url in urls) {
+  df = roster_function(roster_url = url)
+  
+  mac_df = rbind(mac_df, df)
+  
+  Sys.sleep(2)
+}
+```
+```{r}
+urls2 = c(
+  "https://hornetsports.com/sports/football/roster",
+  "https://wmubroncos.com/sports/football/roster"
+)
+
+roster_function2 = function(roster_url){
+  webpage = rvest::read_html(roster_url)
+  
+  # Get player cards first
+  webpage |> rvest::html_elements(".sidearm-roster-player") -> cards
+  
+  # Names
+  cards |> rvest::html_element(".sidearm-roster-player-name h3") |> rvest::html_text2() -> names
+  
+  # Position
+  cards |> rvest::html_element(".sidearm-roster-player-position .text-bold") |> rvest::html_text2() -> position
+  
+  # Year
+  cards |> rvest::html_element(".sidearm-roster-player-academic-year") |> rvest::html_text2() -> year
+  
+  # Height
+  cards |> rvest::html_element(".sidearm-roster-player-height") |> rvest::html_text2() -> height
+  
+  # Weight
+  cards |> rvest::html_element(".sidearm-roster-player-weight") |> rvest::html_text2() -> weight
+  weight = stringr::str_remove(weight, " lbs")
+  
+  # Hometown
+  cards |> rvest::html_element(".sidearm-roster-player-hometown") |> rvest::html_text2() -> hometown
+  split_home = stringr::str_split_fixed(hometown, ",", n = 2)
+  city  = stringr::str_squish(split_home[, 1])
+  state = stringr::str_squish(split_home[, 2])
+  
+  # Previous school
+  cards |> rvest::html_element(".sidearm-roster-player-previous-school") |> rvest::html_text2() -> prev_school
+  prev_school = stringr::str_squish(prev_school)
+  
+  # Current school
+  site = stringr::str_extract(roster_url, "(?<=://)[^.]+")
+  school = unname(school_names[site])
+  
+  # Make the data frame
+  df = data.frame(school = school, name = names, year = year, position = position,
+                  height = height, weight_lbs = weight,
+                  hometown_city = city, hometown_state = state,
+                  previous_school = prev_school)
+  
+  df = df[!is.na(df$position), ]
+  
+  return(df)
+}
+
+for (url in urls2) {
+  df = roster_function2(roster_url = url)
+  
+  mac_df = rbind(mac_df, df)
+  
+  Sys.sleep(2)
+}
+```
